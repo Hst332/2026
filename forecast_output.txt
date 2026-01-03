@@ -1,0 +1,8 @@
+MACRO REGIME 2026
+=================
+
+Regime: Reflation
+Confidence: niedrig
+
+Interpretation:
+Wachstum und Inflation steigen gemeinsam.
