@@ -1,14 +1,16 @@
 name: Forecast
 
+# Läuft Montag bis Freitag um 7:00 Uhr Wien-Zeit
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1-5'  # GitHub Actions benutzt UTC, Wien = UTC+1 (im Winter)
+  workflow_dispatch:  # Ermöglicht auch manuelles Starten
 
 jobs:
   forecast:
     runs-on: ubuntu-24.04
+    env:
+      TZ: Europe/Vienna  # Setzt die Zeitzone für das Skript
 
     steps:
       - name: Checkout repository
@@ -29,24 +31,21 @@ jobs:
             echo "No dependencies"
           fi
 
-      - name: Run forecast script
-        run: python main.py
+      - name: Run forecast script with timestamp
+        run: |
+          echo "Forecast generated on $(date '+%Y-%m-%d %H:%M:%S %Z')" > forecast_output.txt
+          python main.py >> forecast_output.txt
 
       - name: Commit and push forecast output
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Immer die Datei hinzufügen und committen
           git add forecast_output.txt
-
-          # Prüfen, ob es Änderungen gibt, ansonsten "force commit"
           if git diff --cached --quiet; then
-            echo "No changes to commit, overwriting anyway"
             git commit --allow-empty -m "Update forecast_output.txt"
           else
             git commit -m "Update forecast_output.txt"
           fi
 
-          # Push auf main
           git push origin main --force
