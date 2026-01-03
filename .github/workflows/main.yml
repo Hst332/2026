@@ -32,5 +32,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: forecast-output
-          path: forecast_output.txt
+          path: ./forecast_output.txt  # relativer Pfad zum Repo
           if-no-files-found: warn
