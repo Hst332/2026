@@ -36,6 +36,17 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Immer die Datei hinzufügen und committen
           git add forecast_output.txt
-          git diff --quiet && echo "No changes to commit" || git commit -m "Update forecast_output.txt"
-          git push origin main
+
+          # Prüfen, ob es Änderungen gibt, ansonsten "force commit"
+          if git diff --cached --quiet; then
+            echo "No changes to commit, overwriting anyway"
+            git commit --allow-empty -m "Update forecast_output.txt"
+          else
+            git commit -m "Update forecast_output.txt"
+          fi
+
+          # Push auf main
+          git push origin main --force
