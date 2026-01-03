@@ -24,16 +24,16 @@ def main():
     metals = adjust_metals_for_regime(metals, regime)
     macro = macro_regime_output(regime, gas, metals)
 
-    # ✅ Absolute Pfad für CI/Actions
-    output_file = os.path.join(os.getcwd(), "forecast_output.txt")
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write("MACRO REGIME 2026\n")
-        f.write("=================\n\n")
-        f.write(f"Regime: {macro['macro_regime']}\n")
-        f.write(f"Confidence: {macro['confidence']}\n\n")
-        f.write(f"Interpretation:\n{macro['interpretation']}\n")
+   output_file = "forecast_output.txt"  # relative Pfadangabe
+with open(output_file, "w", encoding="utf-8") as f:
+    f.write("MACRO REGIME 2026\n")
+    f.write("=================\n\n")
+    f.write(f"Regime: {macro['macro_regime']}\n")
+    f.write(f"Confidence: {macro['confidence']}\n\n")
+    f.write(f"Interpretation:\n{macro['interpretation']}\n")
 
-    print(f"Forecast written to {output_file}")
+print(f"Forecast written to {output_file}")
+
 
 if __name__ == "__main__":
     main()
