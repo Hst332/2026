@@ -13,9 +13,14 @@ def run():
         copper=next(m for m in metals if m["commodity"] == "Copper"),
         gold=next(m for m in metals if m["commodity"] == "Gold")
     )
+    # ✅ Muss zurückgegeben werden, damit main() Zugriff hat
+    return gas, metals, regime
+
 def main():
     print("Forecasting metals for 2026...")
-    forecast_metals_2026()
+    
+    # ✅ ruft run() auf und bekommt alle benötigten Werte
+    gas, metals, regime = run()
     
     metals = adjust_metals_for_regime(metals, regime)
     macro = macro_regime_output(regime, gas, metals)
@@ -28,4 +33,4 @@ def main():
         f.write(f"Interpretation:\n{macro['interpretation']}\n")
 
 if __name__ == "__main__":
-    run()
+    main()   # ✅ run() wird hier direkt durch main() aufgerufen
