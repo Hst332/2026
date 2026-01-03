@@ -17,7 +17,13 @@ def run():
     metals = adjust_metals_for_regime(metals, regime)
     macro = macro_regime_output(regime, gas, metals)
 
-    print(macro)
+    with open("forecast_output.txt", "w", encoding="utf-8") as f:
+    f.write("MACRO REGIME 2026\n")
+    f.write("=================\n\n")
+    f.write(f"Regime: {macro['macro_regime']}\n")
+    f.write(f"Confidence: {macro['confidence']}\n\n")
+    f.write(f"Interpretation:\n{macro['interpretation']}\n")
+
 
 if __name__ == "__main__":
     run()
