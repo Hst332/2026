@@ -1,8 +1,13 @@
-from .forecast_gold import forecast_gold_2026
-from .forecast_silver import forecast_silver_2026
-from .forecast_copper import forecast_copper_2026
-from forecast_gold import forecast_gold_2026
+# ❌ Alte Zeilen (mischen relative und absolute Imports)
+# from .forecast_gold import forecast_gold_2026
+# from .forecast_silver import forecast_silver_2026
+# from .forecast_copper import forecast_copper_2026
+# from forecast_gold import forecast_gold_2026
 
+# ✅ Neue Zeilen: nur absolute Imports verwenden
+from forecast_gold import forecast_gold_2026
+from forecast_silver import forecast_silver_2026
+from forecast_copper import forecast_copper_2026
 
 def forecast_metals_2026():
     return {
