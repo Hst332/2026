@@ -1,23 +1,32 @@
-from energy.forecast_energy import forecast_energy_2026
-from metals.metals_bundle import forecast_metals_2026
-from macro.macro_regime import detect_macro_regime
-from macro.regime_adjustment import adjust_metals_for_regime
-from macro.macro_output import macro_regime_output
+name: Run Commodity Forecast 2026
 
-def run():
-    gas = forecast_energy_2026()
-    metals = forecast_metals_2026()["metals"]
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 6 * * *"   # täglich 06:00 UTC
+  workflow_dispatch:
 
-    regime = detect_macro_regime(
-        gas=gas,
-        copper=next(m for m in metals if m["commodity"] == "Copper"),
-        gold=next(m for m in metals if m["commodity"] == "Gold")
-    )
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
 
-    metals = adjust_metals_for_regime(metals, regime)
-    macro = macro_regime_output(regime, gas, metals)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    print(macro)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-if __name__ == "__main__":
-    run()
+      - name: Run forecast system
+        run: |
+          python main.py
+
+      - name: Upload forecast output
+        uses: actions/upload-artifact@v4
+        with:
+          name: forecast-output
+          path: forecast_output.txt
