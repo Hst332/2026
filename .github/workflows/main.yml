@@ -34,4 +34,6 @@ jobs:
         with:
           name: forecast-output
           path: forecast_output.txt
-          if-no-files-found: warn
+          if-no-files-found: error    # statt warn, so sehen wir sofort, wenn nix da ist
+          overwrite: true             # wichtig! überschreibt alte Artifacts
+
