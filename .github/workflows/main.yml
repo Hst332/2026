@@ -1,4 +1,4 @@
-name: Daily Forecast
+name: Daily Forecast Push
 
 # Werktags (Mo-Fr) um 7:00 Uhr Wien-Zeit (CET/CEST)
 on:
@@ -14,6 +14,9 @@ jobs:
       # 1️⃣ Repository auschecken
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # wichtig für push
+          fetch-depth: 0  # gesamte Historie für push
 
       # 2️⃣ Python einrichten
       - name: Setup Python
@@ -21,7 +24,7 @@ jobs:
         with:
           python-version: 3.11
 
-      # 3️⃣ Abhängigkeiten installieren (falls vorhanden)
+      # 3️⃣ Abhängigkeiten installieren
       - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then
@@ -30,13 +33,20 @@ jobs:
             echo "No dependencies"
           fi
 
-      # 4️⃣ main.py ausführen
+      # 4️⃣ Forecast Script ausführen
       - name: Run Forecast Script
         run: python main.py
 
-      # 5️⃣ Ergebnis hochladen
-      - name: Upload Forecast Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: forecast-output
-          path: forecast_output.txt
+      # 5️⃣ Prüfen, ob forecast_output.txt geändert wurde
+      - name: Commit Forecast Output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add forecast_output.txt
+          # Nur committen, wenn sich die Datei geändert hat
+          if ! git diff --cached --quiet; then
+            git commit -m "Daily forecast update $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push origin main
+          else
+            echo "No changes to push."
+          fi
