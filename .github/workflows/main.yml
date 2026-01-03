@@ -1,29 +1,28 @@
-name: Forecast
+name: Daily Forecast
 
-# Läuft Montag bis Freitag um 7:00 Uhr Wien-Zeit
+# Werktags (Mo-Fr) um 7:00 Uhr Wien-Zeit (CET/CEST)
 on:
   schedule:
-    - cron: '0 6 * * 1-5'  # GitHub Actions benutzt UTC, Wien = UTC+1 (im Winter)
-  workflow_dispatch:  # Ermöglicht auch manuelles Starten
+    - cron: "0 6 * * 1-5"  # 6:00 UTC = 7:00 CET
+  workflow_dispatch:  # Optional: manuell auslösbar
 
 jobs:
   forecast:
     runs-on: ubuntu-24.04
-    env:
-      TZ: Europe/Vienna  # Setzt die Zeitzone für das Skript
 
     steps:
+      # 1️⃣ Repository auschecken
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
-      - name: Set up Python
+      # 2️⃣ Python einrichten
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      - name: Install dependencies if requirements.txt exists
+      # 3️⃣ Abhängigkeiten installieren (falls vorhanden)
+      - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
@@ -31,21 +30,13 @@ jobs:
             echo "No dependencies"
           fi
 
-      - name: Run forecast script with timestamp
-        run: |
-          echo "Forecast generated on $(date '+%Y-%m-%d %H:%M:%S %Z')" > forecast_output.txt
-          python main.py >> forecast_output.txt
+      # 4️⃣ main.py ausführen
+      - name: Run Forecast Script
+        run: python main.py
 
-      - name: Commit and push forecast output
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add forecast_output.txt
-          if git diff --cached --quiet; then
-            git commit --allow-empty -m "Update forecast_output.txt"
-          else
-            git commit -m "Update forecast_output.txt"
-          fi
-
-          git push origin main --force
+      # 5️⃣ Ergebnis hochladen
+      - name: Upload Forecast Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: forecast-output
+          path: forecast_output.txt
