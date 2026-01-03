@@ -6,4 +6,3 @@ Confidence: niedrig
 
 Interpretation:
 Wachstum und Inflation steigen gemeinsam.
-Forecast written to forecast_output.txt
