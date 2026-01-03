@@ -1,8 +1,9 @@
-name: Forecast Metals 2026
+name: Forecast 2026
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -12,25 +13,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          clean: false   # ❌ wichtig, damit keine Dateien gelöscht werden
 
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: 3.11
 
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      # Optional: falls du requirements.txt hast
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run forecast
+      - name: Run forecast script
         run: python main.py
 
-      - name: Upload forecast artifact
+      - name: Upload forecast output
         uses: actions/upload-artifact@v4
         with:
           name: forecast-output
-          path: ./forecast_output.txt  # relativer Pfad zum Repo
+          path: forecast_output.txt
           if-no-files-found: warn
