@@ -3,6 +3,7 @@ from metals_bundle import forecast_metals_2026
 from macro_regime import detect_macro_regime
 from regime_adjustment import adjust_metals_for_regime
 from macro_output import macro_regime_output
+import os
 
 def run():
     gas = forecast_energy_2026()
@@ -25,7 +26,6 @@ def main():
     metals = adjust_metals_for_regime(metals, regime)
     macro = macro_regime_output(regime, gas, metals)
 
-   import os
 
 # aktuelles Arbeitsverzeichnis ermitteln
 output_file = os.path.join(os.getcwd(), "forecast_output.txt")
