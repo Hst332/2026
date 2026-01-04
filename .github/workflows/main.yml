@@ -28,14 +28,6 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Install dependencies if available
-        run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "No dependencies"
-          fi
-
       - name: Run forecast script
         run: python main.py
 
