@@ -39,20 +39,26 @@ def build_features(df):
 # =======================
 def backtest(df, threshold):
     trades = []
+
     for i, row in df.iterrows():
+        prob = float(row['prob_up'])  # immer einzelne Zahl
+        target = float(row['Target']) # hier war der Fehler
+
         signal = None
-        prob = float(row['prob_up'])
         if prob >= threshold:
             signal = 1  # LONG
         elif prob <= 1 - threshold:
             signal = -1  # SHORT
         else:
             continue
-        ret = 1 if (signal == 1 and row['Target'] == 1) or (signal == -1 and row['Target'] == 0) else -1
+
+        ret = 1 if (signal == 1 and target == 1) or (signal == -1 and target == 0) else -1
         trades.append(ret)
+
     trades = np.array(trades)
     if len(trades) == 0:
         return {"threshold": threshold, "accuracy": None, "profit": None, "n_trades": 0}
+
     accuracy = np.mean(trades > 0)
     profit = np.sum(trades)
     return {"threshold": threshold, "accuracy": accuracy, "profit": profit, "n_trades": len(trades)}
