@@ -56,10 +56,11 @@ jobs:
           git diff --cached --quiet || git commit -m "Update forecast output [skip ci]"
           git push origin main || true
 
-
-
       - name: Run SILVER Backtest
         run: python SILVER_BACKTEST.py
+        
+      - name: Run Gold Backtest
+        run: python GOLD_BACKTEST.py
 
 
 
