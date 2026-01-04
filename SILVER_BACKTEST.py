@@ -1,102 +1,46 @@
-# =======================
-# SILVER_BACKTEST.PY
-# =======================
-
+# --------- SILVER ---------
 import pandas as pd
-import numpy as np
-import yfinance as yf
-import csv
 from datetime import datetime
+import metals_bundle  # Funktion zum Laden der Silber-Daten
 
-SILVER_SYMBOL = "SI=F"  # Silber-Future
-START_DATE = "2023-01-01"
-THRESHOLDS = [0.05, 0.15, 0.30, 0.95, 0.96, 0.975, 0.99]  # Testschwellen
+# Lade Silber-Daten
+df = metals_bundle.load_silver()  # df muss 'Close' und 'prob_up' enthalten
 
-# =======================
-# DATEN LADEN
-# =======================
-def load_silver():
-    df = yf.download(SILVER_SYMBOL, start=START_DATE, progress=False)
-    if df.empty:
-        raise ValueError("Keine Daten von Yahoo Finance")
-    df = df[['Close']].copy()
-    df['Return'] = df['Close'].pct_change().shift(-1)  # nächste Periode
-    df['Target'] = (df['Return'] > 0).astype(int)
-    df.dropna(inplace=True)
-    return df
+# Letzter verfügbarer Tag
+last_row = df.iloc[-1]
+last_date = last_row.name.strftime("%Y-%m-%d")
+close_price = last_row["Close"]
+prob_up = last_row["prob_up"]
 
-# =======================
-# FEATURES ERSTELLEN
-# =======================
-def build_features(df):
-    # Dummy: zufällige Wahrscheinlichkeit, dass Silber steigt
-    if 'prob_up' not in df.columns:
-        df['prob_up'] = np.random.rand(len(df))
-    return df
+# Handelsstrategie Regeln
+if prob_up >= 0.96:
+    signal = "LONG"
+    position_size = "100 % Positionsgröße"
+elif prob_up >= 0.90:
+    signal = "LONG (partial)"
+    position_size = "50 % Positionsgröße"
+else:
+    signal = "NO_TRADE"
+    position_size = "0 %"
 
-# =======================
-# BACKTEST
-# =======================
-def backtest(df, threshold):
-    trades = []
+# Ausgabe-Text zusammenstellen
+output_text = (
+    "--------- SILVER ---------\n"
+    f"Data date : {last_date}\n"
+    f"Close     : {close_price}\n"
+    f"Prob UP   : {prob_up:.2f}%\n"
+    "Handelsstrategie:\n"
+    "prob_up ≥ 0.96 → LONG 100 % Positionsgröße\n"
+    "0.90 ≤ prob_up < 0.96 → LONG 50 % Positionsgröße\n"
+    "Alles darunter → kein Trade\n"
+    "Kein Short, Max. Hebel 15, Stop-Loss -20 %\n"
+    f"Signal    : {signal}\n"
+    f"Positionsgröße : {position_size}\n"
+)
 
-    for i, row in df.iterrows():
-        prob = float(row['prob_up'])  # immer einzelne Zahl
-        target = float(row['Target']) # hier war der Fehler
+# Ausgabe in Konsole
+print(output_text)
 
-        signal = None
-        if prob >= threshold:
-            signal = 1  # LONG
-        elif prob <= 1 - threshold:
-            signal = -1  # SHORT
-        else:
-            continue
-
-        ret = 1 if (signal == 1 and target == 1) or (signal == -1 and target == 0) else -1
-        trades.append(ret)
-
-    trades = np.array(trades)
-    if len(trades) == 0:
-        return {"threshold": threshold, "accuracy": None, "profit": None, "n_trades": 0}
-
-    accuracy = np.mean(trades > 0)
-    profit = np.sum(trades)
-    return {"threshold": threshold, "accuracy": accuracy, "profit": profit, "n_trades": len(trades)}
-
-# =======================
-# MAIN
-# =======================
-def main():
-    print("[START] Silver backtest")
-    df = load_silver()
-    df = build_features(df)
-
-    results = []
-
-    for th in THRESHOLDS:
-        res = backtest(df, th)
-        results.append(res)
-        trades = res['n_trades']
-        acc = f"{res['accuracy']*100:.2f}%" if res['accuracy'] is not None else "N/A"
-        prof = res['profit'] if res['profit'] is not None else "N/A"
-        print(f"TH={th:.2f} | Trades={trades} | Accuracy={acc} | Profit={prof}")
-
-    # CSV schreiben
-    csv_file = "silver_backtest_results.csv"
-    with open(csv_file, mode='w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=["threshold", "n_trades", "accuracy", "profit"])
-        writer.writeheader()
-        for r in results:
-            writer.writerow({
-                "threshold": r["threshold"],
-                "n_trades": r["n_trades"],
-                "accuracy": r["accuracy"],
-                "profit": r["profit"]
-            })
-    print(f"\n[OK] {csv_file} written")
-
-# =======================
-# RUN
-# =======================
-if __name__ == "__main__":
-    main()
+# **In forecast_output.txt schreiben**
+with open("forecast_output.txt", "a") as f:
+    f.write(output_text + "\n")
