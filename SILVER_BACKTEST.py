@@ -1,60 +1,38 @@
-#!/usr/bin/env python3
-"""
-SILVER BACKTEST
-Automatischer Threshold-Test für Handelsentscheidungen
-"""
+# =======================
+# SILVER_BACKTEST.PY
+# =======================
 
-# =======================
-# IMPORTS
-# =======================
-import numpy as np
 import pandas as pd
+import numpy as np
 import yfinance as yf
-from sklearn.linear_model import LogisticRegression
+import csv
+from datetime import datetime
+
+SILVER_SYMBOL = "SI=F"  # Silber-Future
+START_DATE = "2023-01-01"
+THRESHOLDS = [0.50, 0.51, 0.52, 0.54, 0.56]  # Testschwellen
 
 # =======================
-# CONFIG
-# =======================
-SILVER_SYMBOL = "SI=F"
-START_DATE = "2010-01-01"
-
-# =======================
-# LOAD SILVER PRICES
+# DATEN LADEN
 # =======================
 def load_silver():
     df = yf.download(SILVER_SYMBOL, start=START_DATE, progress=False)
     if df.empty:
-        return None
-    df = df[["Close"]].rename(columns={"Close": "Close"})
+        raise ValueError("Keine Daten von Yahoo Finance")
+    df = df[['Close']].copy()
+    df['Return'] = df['Close'].pct_change().shift(-1)  # nächste Periode
+    df['Target'] = (df['Return'] > 0).astype(int)
     df.dropna(inplace=True)
     return df
 
 # =======================
-# BUILD FEATURES + TARGET
+# FEATURES ERSTELLEN
 # =======================
-def build_silver_features(df):
-    df = df.copy()
-    df["ret"] = df["Close"].pct_change()
-    df["trend_5"] = df["Close"].pct_change(5)
-    df["trend_20"] = df["Close"].pct_change(20)
-    df["vol_10"] = df["ret"].rolling(10).std()
-    df["Target"] = (df["ret"].shift(-1) > 0).astype(int)
-    df.dropna(inplace=True)
+def build_features(df):
+    # Dummy: zufällige Wahrscheinlichkeit, dass Silber steigt
+    if 'prob_up' not in df.columns:
+        df['prob_up'] = np.random.rand(len(df))
     return df
-
-# =======================
-# TRAIN MODEL + PREDICT
-# =======================
-def train_silver_model(df):
-    features = ["trend_5", "trend_20", "vol_10"]
-    X = df[features]
-    y = df["Target"]
-
-    model = LogisticRegression(max_iter=200, class_weight="balanced")
-    model.fit(X, y)
-
-    df["prob_up"] = model.predict_proba(X)[:, 1]  # Wichtig für Backtest
-    return df, model, features
 
 # =======================
 # BACKTEST
@@ -63,66 +41,53 @@ def backtest(df, threshold):
     trades = []
     for i, row in df.iterrows():
         signal = None
-        prob = row["prob_up"]
-        if isinstance(prob, pd.Series):
-            prob = float(prob.iloc[0])  # <-- korrekt extrahieren
-
+        prob = float(row['prob_up'])
         if prob >= threshold:
             signal = 1  # LONG
         elif prob <= 1 - threshold:
             signal = -1  # SHORT
         else:
             continue
-
-        target = row["Target"]
-        if isinstance(target, pd.Series):
-            target = int(target.iloc[0])
-
-        # Profit: +1 für Treffer, -1 für Fehlsignal
-        if (signal == 1 and target == 1) or (signal == -1 and target == 0):
-            ret = 1
-        else:
-            ret = -1
+        ret = 1 if (signal == 1 and row['Target'] == 1) or (signal == -1 and row['Target'] == 0) else -1
         trades.append(ret)
-
     trades = np.array(trades)
     if len(trades) == 0:
         return {"threshold": threshold, "accuracy": None, "profit": None, "n_trades": 0}
-
     accuracy = np.mean(trades > 0)
     profit = np.sum(trades)
     return {"threshold": threshold, "accuracy": accuracy, "profit": profit, "n_trades": len(trades)}
-
 
 # =======================
 # MAIN
 # =======================
 def main():
     print("[START] Silver backtest")
-
-    # Silber-Daten laden und Features erstellen
     df = load_silver()
-    df = build_silver_features(df)  # muss Target + prob_up enthalten
+    df = build_features(df)
 
-    # Schwellenwerte von 0.50 bis 0.56 testen
-    thresholds = [0.50, 0.51, 0.52, 0.53, 0.54, 0.55, 0.56]
     results = []
 
-    for th in thresholds:
+    for th in THRESHOLDS:
         res = backtest(df, th)
         results.append(res)
-
-    # Ergebnisse anzeigen
-    print("\n=== SILVER BACKTEST RESULTS ===")
-    for r in results:
-        acc_str = f"{r['accuracy']*100:.2f}%" if r['accuracy'] is not None else "N/A"
-        print(f"TH={r['threshold']:.2f} | Trades={r['n_trades']} | Accuracy={acc_str} | Profit={r['profit']}")
+        trades = res['n_trades']
+        acc = f"{res['accuracy']*100:.2f}%" if res['accuracy'] is not None else "N/A"
+        prof = res['profit'] if res['profit'] is not None else "N/A"
+        print(f"TH={th:.2f} | Trades={trades} | Accuracy={acc} | Profit={prof}")
 
     # CSV schreiben
-    out_csv = "silver_backtest_results.csv"
-    pd.DataFrame(results).to_csv(out_csv, index=False)
-    print(f"\n[OK] {out_csv} written")
-
+    csv_file = "silver_backtest_results.csv"
+    with open(csv_file, mode='w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=["threshold", "n_trades", "accuracy", "profit"])
+        writer.writeheader()
+        for r in results:
+            writer.writerow({
+                "threshold": r["threshold"],
+                "n_trades": r["n_trades"],
+                "accuracy": r["accuracy"],
+                "profit": r["profit"]
+            })
+    print(f"\n[OK] {csv_file} written")
 
 # =======================
 # RUN
