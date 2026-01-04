@@ -10,64 +10,58 @@ Wachstum und Inflation steigen gemeinsam.
 ===================================
    MARKET FORECAST – DAILY UPDATE
 ===================================
-Run time (UTC): 2026-01-03 20:59:40 UTC
+Run time (UTC): 2026-01-04 07:41:44 UTC
 
 --------- NATURAL GAS ---------
-Data date : 2026-01-02
+Data date : LAST_AVAILABLE
 Close     : 3.62
-Model CV  : 50.44% ± 1.67%
 Prob UP   : 53.78%
 Prob DOWN : 46.22%
 Signal    : NO_TRADE
 
---------- OIL (BRENT/WTI) ---------
-Data date : 2026-01-02
+--------- OIL (WTI) ---------
+Data date : LAST_AVAILABLE
 Close     : 60.75
 Prob UP   : 47.0%
 Prob DOWN : 53.0%
 Signal    : NO_TRADE
 
 --------- GOLD ---------
-Data date : 2026-01-02
+Data date : LAST_AVAILABLE
 Close     : 4314.4
-Model CV  : 0.00% ± 0.00%
 Prob UP   : 50.0%
 Prob DOWN : 50.0%
 Signal    : NO_TRADE
 
 --------- SILVER ---------
-Data date : 2026-01-02
+Data date : LAST_AVAILABLE
 Close     : 70.56
-Model CV  : 0.00% ± 0.00%
 Prob UP   : 50.0%
 Prob DOWN : 50.0%
 Signal    : NO_TRADE
 
 --------- COPPER ---------
-Data date : 2026-01-02
+Data date : LAST_AVAILABLE
 Close     : 5.64
-Model CV  : 0.00% ± 0.00%
 Prob UP   : 50.0%
 Prob DOWN : 50.0%
 Signal    : NO_TRADE
 
 --------- SP500 ---------
-Data date : 2026-01-02
+Data date : LAST_AVAILABLE
 Close     : 6858.47
-Model CV  : 0.00% ± 0.00%
 Prob UP   : 50.0%
 Prob DOWN : 50.0%
 Signal    : NO_TRADE
 
 --------- DAX ---------
-Data date : 2026-01-02
+Data date : LAST_AVAILABLE
 Close     : 24539.34
-Model CV  : 0.00% ± 0.00%
 Prob UP   : 50.0%
 Prob DOWN : 50.0%
 Signal    : NO_TRADE
 
 ===================================
-Anlageklasse	Datum	1-5T_Steigt	1-5T_Bleibt	1-5T_Fällt	Einschätzung_1-5T	2-3W_Steigt	2-3W_Bleibt	2-3W_Fällt	Einschätzung_2-3W	Diff_1-5	Diff_2-3W
-Öl (WTI)	2026-01-03	50	30	20	Handeln nur wenn >xx%	52	28	20	Mittelfristig gestützt durch OPEC.	30	32
-Kaffee (Coffee C)	2026-01-03	45	35	20	Saisonale Stärke, Angebotsrisiko.	50	30	20			
+NOTE:
+All probabilities except Natural Gas are placeholders.
+System is structurally ready for live data integration.
