@@ -100,20 +100,12 @@ def backtest(df, threshold):
 def main():
     print("[START] Silver backtest")
 
-    # Lade Silberpreise
+    # Silber-Daten laden und Features erstellen
     df = load_silver()
-    if df is None or len(df) == 0:
-        print("[ERROR] No silver data loaded")
-        return
+    df = build_silver_features(df)  # muss Target + prob_up enthalten
 
-    # Features + Target
-    df = build_silver_features(df)
-
-    # Modell + prob_up berechnen
-    df, model, features = train_silver_model(df)
-
-    # Backtest Thresholds
-    thresholds = [0.52, 0.54, 0.56, 0.58]
+    # Schwellenwerte von 0.50 bis 0.56 testen
+    thresholds = [0.50, 0.51, 0.52, 0.53, 0.54, 0.55, 0.56]
     results = []
 
     for th in thresholds:
@@ -123,17 +115,14 @@ def main():
     # Ergebnisse anzeigen
     print("\n=== SILVER BACKTEST RESULTS ===")
     for r in results:
-        print(
-            f"TH={r['threshold']:.2f} | "
-            f"Trades={r['n_trades']} | "
-            f"Accuracy={r['accuracy'] if r['accuracy'] is not None else 0:.2%} | "
-            f"Profit={r['profit'] if r['profit'] is not None else 0}"
-        )
+        acc_str = f"{r['accuracy']*100:.2f}%" if r['accuracy'] is not None else "N/A"
+        print(f"TH={r['threshold']:.2f} | Trades={r['n_trades']} | Accuracy={acc_str} | Profit={r['profit']}")
 
-    # Ergebnisse speichern
-    out = pd.DataFrame(results)
-    out.to_csv("silver_backtest_results.csv", index=False)
-    print("\n[OK] silver_backtest_results.csv written")
+    # CSV schreiben
+    out_csv = "silver_backtest_results.csv"
+    pd.DataFrame(results).to_csv(out_csv, index=False)
+    print(f"\n[OK] {out_csv} written")
+
 
 # =======================
 # RUN
