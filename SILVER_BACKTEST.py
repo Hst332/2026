@@ -5,9 +5,6 @@ CODE B – SILVER BACKTEST
 Automatisch prüft, ob Prob_UP >= 54% oder 56% sinnvoll ist.
 Output: console + CSV
 """
-
-
-
 # =======================
 # CONFIG
 # =======================
