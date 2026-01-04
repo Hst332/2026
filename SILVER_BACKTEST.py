@@ -49,23 +49,45 @@ def build_features(df):
 # =======================
 def backtest(df, threshold):
     trades = []
-    for i, row in df.iterrows():
-        signal = None
-        if row['prob_up'] >= threshold:
-            signal = 1  # LONG
-        elif row['prob_up'] <= 1-threshold:
+
+    for _, row in df.iterrows():
+        # 🔒 erzwingt Skalar (kein Series-Fehler mehr)
+        prob = float(row["prob_up"])
+        target = int(row["Target"])
+
+        # Signal-Logik
+        if prob >= threshold:
+            signal = 1   # LONG
+        elif prob <= 1 - threshold:
             signal = -1  # SHORT
         else:
             continue
-        # Profit: +1 für Treffer, -1 für Fehlsignal
-        ret = 1 if (signal == 1 and row["Target"]==1) or (signal==-1 and row["Target"]==0) else -1
+
+        # Treffer-Logik (1-Tages-Forecast)
+        if (signal == 1 and target == 1) or (signal == -1 and target == 0):
+            ret = 1
+        else:
+            ret = -1
+
         trades.append(ret)
-    trades = np.array(trades)
+
+    # Keine Trades → sauber abbrechen
     if len(trades) == 0:
-        return {"threshold": threshold, "accuracy": None, "profit": None, "n_trades":0}
-    accuracy = np.mean(trades>0)
-    profit = np.sum(trades)
-    return {"threshold": threshold, "accuracy": accuracy, "profit": profit, "n_trades": len(trades)}
+        return {
+            "threshold": threshold,
+            "accuracy": None,
+            "profit": 0,
+            "n_trades": 0
+        }
+
+    trades = np.array(trades)
+
+    return {
+        "threshold": threshold,
+        "accuracy": float(np.mean(trades > 0)),
+        "profit": int(np.sum(trades)),
+        "n_trades": int(len(trades))
+    }
 
 # =======================
 # MAIN
