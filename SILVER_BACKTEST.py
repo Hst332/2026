@@ -1,3 +1,7 @@
+import yfinance as yf
+
+
+
 #!/usr/bin/env python3
 """
 CODE B – SILVER BACKTEST
