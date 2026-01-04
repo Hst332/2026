@@ -12,8 +12,7 @@ from datetime import datetime
 import yfinance as yf
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import TimeSeriesSplit
-python -m pip install --upgrade pip
-python -m pip install pandas numpy scikit-learn yfinance
+
 
 # =======================
 # CONFIG
