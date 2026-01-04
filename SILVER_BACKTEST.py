@@ -93,26 +93,46 @@ def backtest(df, threshold):
 # MAIN
 # =======================
 def main():
+    print("[START] Silver backtest")
+
+    # -----------------------
+    # Daten laden
+    # -----------------------
     df = load_silver()
-    df = build_features(df)
 
-    # Modell
-    X = df[FEATURES]
-    y = df["Target"]
-    model = LogisticRegression(max_iter=200, class_weight="balanced")
-    model.fit(X, y)
-    df["prob_up"] = model.predict_proba(X)[:,1]
+    if df is None or len(df) == 0:
+        print("[ERROR] No silver data loaded")
+        return
 
+    # -----------------------
+    # Schwellen testen
+    # -----------------------
+    thresholds = [0.52, 0.54, 0.56, 0.58]
     results = []
-    for th in THRESHOLDS:
+
+    for th in thresholds:
         res = backtest(df, th)
         results.append(res)
-        print(f"Threshold {th*100:.0f}% | Accuracy: {res['accuracy']*100 if res['accuracy'] else 'N/A'}% | "
-              f"Profit: {res['profit']} | Trades: {res['n_trades']}")
 
-    # Speichern
-    pd.DataFrame(results).to_csv(OUT_CSV, index=False)
-    print(f"\n[OK] Backtest abgeschlossen. Ergebnisse in {OUT_CSV}")
+    # -----------------------
+    # Ergebnisse anzeigen
+    # -----------------------
+    print("\n=== SILVER BACKTEST RESULTS ===")
+    for r in results:
+        print(
+            f"TH={r['threshold']:.2f} | "
+            f"Trades={r['n_trades']} | "
+            f"Accuracy={r['accuracy']} | "
+            f"Profit={r['profit']}"
+        )
+
+    # -----------------------
+    # Ergebnisse speichern
+    # -----------------------
+    out = pd.DataFrame(results)
+    out.to_csv("silver_backtest_results.csv", index=False)
+
+    print("\n[OK] silver_backtest_results.csv written")
 
 if __name__ == "__main__":
     main()
