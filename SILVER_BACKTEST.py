@@ -63,7 +63,10 @@ def backtest(df, threshold):
     trades = []
     for i, row in df.iterrows():
         signal = None
-        prob = float(row["prob_up"])
+        prob = row["prob_up"]
+        if isinstance(prob, pd.Series):
+            prob = float(prob.iloc[0])  # <-- korrekt extrahieren
+
         if prob >= threshold:
             signal = 1  # LONG
         elif prob <= 1 - threshold:
@@ -71,8 +74,15 @@ def backtest(df, threshold):
         else:
             continue
 
+        target = row["Target"]
+        if isinstance(target, pd.Series):
+            target = int(target.iloc[0])
+
         # Profit: +1 für Treffer, -1 für Fehlsignal
-        ret = 1 if (signal == 1 and row["Target"] == 1) or (signal == -1 and row["Target"] == 0) else -1
+        if (signal == 1 and target == 1) or (signal == -1 and target == 0):
+            ret = 1
+        else:
+            ret = -1
         trades.append(ret)
 
     trades = np.array(trades)
@@ -82,6 +92,7 @@ def backtest(df, threshold):
     accuracy = np.mean(trades > 0)
     profit = np.sum(trades)
     return {"threshold": threshold, "accuracy": accuracy, "profit": profit, "n_trades": len(trades)}
+
 
 # =======================
 # MAIN
