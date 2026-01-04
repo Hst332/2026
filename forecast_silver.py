@@ -1,138 +1,46 @@
-#!/usr/bin/env python3
-"""
-CODE A – SILVER FORECAST
-COMEX Silver (SI=F)
-
-ML-based, conservative, tradable
-"""
-
-# =======================
-# IMPORTS
-# =======================
-import numpy as np
+# --------- SILVER ---------
 import pandas as pd
 from datetime import datetime
-import yfinance as yf
+import metals_bundle  # falls du die Funktion zum Laden der Daten hast
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import TimeSeriesSplit
-from sklearn.metrics import accuracy_score
+# Lade Silber-Daten
+df = metals_bundle.load_silver()  # df muss 'Close' und 'prob_up' enthalten
 
-# =======================
-# CONFIG
-# =======================
-START_DATE = "2013-01-01"
+# Letzter verfügbarer Tag
+last_row = df.iloc[-1]
+last_date = last_row.name.strftime("%Y-%m-%d")
+close_price = last_row["Close"]
+prob_up = last_row["prob_up"]
 
-SILVER_SYMBOL = "SI=F"
-GOLD_SYMBOL = "GC=F"
+# Handelsstrategie Regeln
+# Asset: Silver
+# Signal: prob_up ≥ 0.96
+# Richtung: LONG only
+# Trades/Jahr: ~12
+# Hebel: max. 15
+# Stop-Loss: hart bei -20 %
+# Kein Trade: alles darunter ignorieren
 
-UP_THRESHOLD = 0.56
-DOWN_THRESHOLD = 0.44
+# Signal-Erstellung
+if prob_up >= 0.96:
+    signal = "LONG"
+    position_size = "100 % Positionsgröße"
+elif prob_up >= 0.90:
+    signal = "LONG (partial)"
+    position_size = "50 % Positionsgröße"
+else:
+    signal = "NO_TRADE"
+    position_size = "0 %"
 
-# =======================
-# DATA
-# =======================
-def load_prices():
-    silver = yf.download(
-        SILVER_SYMBOL,
-        start=START_DATE,
-        auto_adjust=True,
-        progress=False,
-    )
-
-    gold = yf.download(
-        GOLD_SYMBOL,
-        start=START_DATE,
-        auto_adjust=True,
-        progress=False,
-    )
-
-    df = pd.DataFrame(index=silver.index)
-    df["Silver"] = silver["Close"]
-    df["Gold"] = gold["Close"]
-    df.dropna(inplace=True)
-
-    return df
-
-# =======================
-# FEATURES
-# =======================
-def build_features(df):
-    df = df.copy()
-
-    df["ret"] = df["Silver"].pct_change()
-    df["trend_5"] = df["Silver"].pct_change(5)
-    df["trend_20"] = df["Silver"].pct_change(20)
-    df["vol_10"] = df["ret"].rolling(10).std()
-
-    df["gold_ratio"] = df["Silver"] / df["Gold"]
-    df["gold_ratio_trend"] = df["gold_ratio"].pct_change(10)
-
-    df["Target"] = (df["ret"].shift(-1) > 0).astype(int)
-
-    df.dropna(inplace=True)
-    return df
-
-# =======================
-# MODEL
-# =======================
-def train_model(df):
-    features = [
-        "trend_5",
-        "trend_20",
-        "vol_10",
-        "gold_ratio_trend",
-    ]
-
-    X = df[features]
-    y = df["Target"]
-
-    tscv = TimeSeriesSplit(n_splits=5)
-    acc = []
-
-    for tr, te in tscv.split(X):
-        m = LogisticRegression(
-            max_iter=200,
-            class_weight="balanced"
-        )
-        m.fit(X.iloc[tr], y.iloc[tr])
-        acc.append(
-            accuracy_score(y.iloc[te], m.predict(X.iloc[te]))
-        )
-
-    model = LogisticRegression(
-        max_iter=200,
-        class_weight="balanced"
-    )
-    model.fit(X, y)
-
-    return model, features, float(np.mean(acc)), float(np.std(acc))
-
-# =======================
-# RUN
-# =======================
-def forecast_silver():
-    prices = load_prices()
-    df = build_features(prices)
-
-    model, features, cv_mean, cv_std = train_model(df)
-
-    last = df.iloc[-1:]
-    prob_up = model.predict_proba(last[features])[0][1]
-
-    signal = (
-        "UP" if prob_up >= UP_THRESHOLD
-        else "DOWN" if prob_up <= DOWN_THRESHOLD
-        else "NO_TRADE"
-    )
-
-    return {
-        "market": "SILVER",
-        "date": last.index[0].date().isoformat(),
-        "close": float(prices.iloc[-1]["Silver"]),
-        "prob_up": prob_up,
-        "prob_down": 1.0 - prob_up,
-        "signal": signal,
-        "cv_mean": cv_mean,
-        "cv_std": cv_std,
-    }
+# Ausgabe
+print("--------- SILVER ---------")
+print(f"Data date : {last_date}")
+print(f"Close     : {close_price}")
+print(f"Prob UP   : {prob_up:.2f}%")
+print("Handelsstrategie:")
+print("prob_up ≥ 0.96 → LONG 100 % Positionsgröße")
+print("0.90 ≤ prob_up < 0.96 → LONG 50 % Positionsgröße")
+print("Alles darunter → kein Trade")
+print("Kein Short, Max. Hebel 15, Stop-Loss -20 %")
+print(f"Signal    : {signal}")
+print(f"Positionsgröße : {position_size}")
