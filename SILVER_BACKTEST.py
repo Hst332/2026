@@ -1,7 +1,3 @@
-import yfinance as yf
-
-
-
 #!/usr/bin/env python3
 """
 CODE B – SILVER BACKTEST
@@ -9,6 +5,14 @@ CODE B – SILVER BACKTEST
 Automatisch prüft, ob Prob_UP >= 54% oder 56% sinnvoll ist.
 Output: console + CSV
 """
+
+import pandas as pd
+import numpy as np
+from datetime import datetime
+import yfinance as yf
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import TimeSeriesSplit
+
 # =======================
 # CONFIG
 # =======================
