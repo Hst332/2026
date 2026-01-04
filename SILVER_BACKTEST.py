@@ -10,7 +10,7 @@ from datetime import datetime
 
 SILVER_SYMBOL = "SI=F"  # Silber-Future
 START_DATE = "2023-01-01"
-THRESHOLDS = [0.59, 0.60, 0.61, 0.62, 0.63, 0.64, 0.65]  # Testschwellen
+THRESHOLDS = [0.59, 0.60, 0.61, 0.62, 0.75, 0.85, 0.95]  # Testschwellen
 
 # =======================
 # DATEN LADEN
