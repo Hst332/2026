@@ -50,6 +50,9 @@ jobs:
           git add forecast_output.txt
           git commit -m "Update forecast output [skip ci]" || echo "No changes to commit"
           git push origin main
+          git add requirements.txt
+          git commit -m "Add requirements"
+          git push
 
       - name: Run SILVER Backtest
         run: python SILVER_BACKTEST.py
