@@ -45,4 +45,8 @@ jobs:
           git commit -m "Update forecast output [skip ci]" || echo "No changes to commit"
           git push origin main
 
+      - name: Run SILVER Backtest
+        run: python SILVER_BACKTEST.py
+
+
 
