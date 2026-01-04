@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 # =======================
 SYMBOL = "GC=F"          # Gold Futures
 START_DATE = "2010-01-01"
-THRESHOLDS = [0.90, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99]
+THRESHOLDS = [0.30, 0.42, 0.54, 0.65, 0.76, 0.87, 0.18, 0.09]
 
 # =======================
 # DATA
