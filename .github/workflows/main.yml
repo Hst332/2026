@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy scikit-learn yfinance
+      
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
