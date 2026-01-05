@@ -1,38 +1,19 @@
---------- GOLD ---------
-Data date : 2026-01-05
-Close     : Ticker
-GC=F    4437.8
-Name: 2026-01-05 00:00:00, dtype: float64
-Prob UP   : 50.24%
-Strategie:
-0.53–0.55 → 50 % Position
-≥ 0.55 → 100 % Position
-Kein Short | Max Hebel 5
-Signal    : NO_TRADE
-Position  : 0 %
-
---------- SILVER ---------
-Data date : 2026-01-05
-Close     : Ticker
-SI=F    75.64
-Name: 2026-01-05 00:00:00, dtype: float64
-Prob UP   : 51.79%
-Strategie:
-≥ 0.96 → LONG
-LONG only | Max Hebel 15
-Stop-Loss -20 %
-Signal    : NO_TRADE
-Position  : 0 %
-
---------- NATURAL GAS ---------
-Data date : 2026-01-05
-Close     : Ticker
-NG=F    3.51
-Name: 2026-01-05 00:00:00, dtype: float64
-Prob UP   : 45.99%
-Regeln:
-≥ 56 % → LONG
-≤ 44 % → SHORT
-Max Hebel 10 | SL -20 %
-Signal    : NO_TRADE
-
+================================================================================
+MARKET FORECAST – DAILY SUMMARY
+Run time (UTC): 2026-01-05 09:54:00
+================================================================================
+ASSET        DATE        CLOSE      PROB UP   SIGNAL     POSITION   STRATEGY
+================================================================================
+GOLD         2026-01-05 4447.70    50.24 %   NO_TRADE   0 %       0.53–0.55 → 50 %
+                                                               ≥ 0.55 → 100 %
+                                                               No Short | Lev ≤ 5
+--------------------------------------------------------------------------------
+SILVER       2026-01-05 75.91      51.79 %   NO_TRADE   0 %       ≥ 0.96 → LONG
+                                                               Long only
+                                                               Lev ≤ 15 | SL −20 %
+--------------------------------------------------------------------------------
+NATURAL GAS  2026-01-05 3.51       45.99 %   NO_TRADE   0 %       ≥ 56 % → LONG
+                                                               ≤ 44 % → SHORT
+                                                               Lev ≤ 10 | SL −20 %
+--------------------------------------------------------------------------------
+================================================================================
