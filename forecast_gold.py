@@ -1,17 +1,12 @@
-# forecast_gold.py
-from datetime import datetime
+import metals_bundle
 
 def gold_result():
-    # HIER nutzt du DEIN echtes df
-    last_date = "2026-01-05"
-    close = 4458.20
-    prob_up = 0.5023
+    df = metals_bundle.load_gold()
+    last = df.iloc[-1]
 
-    strategy = [
-        "0.53–0.55 → YES50",
-        "≥ 0.55 → YES100",
-        "No Short | Lev ≤ 5"
-    ]
+    prob_up = float(last["prob_up"])
+    close = float(last["Close"])
+    date = last.name.strftime("%Y-%m-%d")
 
     if prob_up >= 0.55:
         signal = "YES100"
@@ -22,11 +17,15 @@ def gold_result():
 
     return {
         "asset": "GOLD",
-        "date": last_date,
+        "date": date,
         "close": close,
         "prob_up": prob_up,
         "signal": signal,
-        "strategy_lines": strategy,
+        "strategy_lines": [
+            "0.53–0.55 → YES50",
+            "≥ 0.55 → YES100",
+            "No Short | Lev ≤ 5"
+        ],
         "forecast_1_5": "=",
         "forecast_2_3w": "+"
     }
