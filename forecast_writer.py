@@ -13,7 +13,7 @@ def write_daily_summary(results, filename="forecast_output.txt"):
         f.write("=" * 100 + "\n")
 
         for r in results:
-            # Zeile 1: Asset + Datum + Close + Prob + erste Strategie-Linie
+            # Zeile 1: Asset + Datum + Close + Prob + Forecast + erste Strategie-Zeile
             f.write(
                 f"{r['asset']:<12}"
                 f"{r['date']:<12}"
@@ -26,7 +26,7 @@ def write_daily_summary(results, filename="forecast_output.txt"):
                 f"{r['strategy_lines'][0]}\n"
             )
 
-            # Rest der Strategielinien darunter, Forecast-Spalten leer
+            # Rest der Strategielinien darunter: 78 Zeichen einrücken, Forecast-Spalten leer
             for line in r["strategy_lines"][1:]:
                 f.write(f"{'':<78}{line}\n")
 
