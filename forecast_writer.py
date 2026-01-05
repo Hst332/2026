@@ -1,53 +1,42 @@
-# forecast_writer.py
 from datetime import datetime
 
-OUT_FILE = "forecast_output.txt"
+def write_daily_summary(results, filename="forecast_output.txt"):
+    """
+    results = Liste von Dicts mit Keys:
+    asset, date, close, prob_up, signal, position, strategy_lines (Liste)
+    """
 
-def _fmt_float(x, digits=2):
-    try:
-        return f"{float(x):.{digits}f}"
-    except Exception:
-        return "NA"
+    def fmt_signal(sig):
+        return ">> TRADE <<" if sig != "NO_TRADE" else "-- NO TRADE --"
 
-def _fmt_pct(x, digits=2):
-    try:
-        return f"{float(x)*100:.{digits}f} %"
-    except Exception:
-        return "NA"
-
-def init_forecast_file():
-    with open(OUT_FILE, "w", encoding="utf-8") as f:
-        f.write("================================================================================\n")
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("=" * 80 + "\n")
         f.write("MARKET FORECAST – DAILY SUMMARY\n")
         f.write(f"Run time (UTC): {datetime.utcnow():%Y-%m-%d %H:%M:%S}\n")
-        f.write("================================================================================\n")
+        f.write("=" * 80 + "\n")
         f.write(
-            "ASSET        DATE        CLOSE      PROB UP   SIGNAL     POSITION   STRATEGY\n"
+            "ASSET        DATE        CLOSE      PROB UP    SIGNAL           "
+            "POSITION   STRATEGY (RULES)\n"
         )
-        f.write("================================================================================\n")
+        f.write("=" * 80 + "\n")
 
-def write_asset_row(
-    asset,
-    date,
-    close,
-    prob_up,
-    signal,
-    position,
-    strategy_lines
-):
-    with open(OUT_FILE, "a", encoding="utf-8") as f:
-        f.write(
-            f"{asset:<12} {date:<10} "
-            f"{_fmt_float(close,2):<10} "
-            f"{_fmt_pct(prob_up):<9} "
-            f"{signal:<10} "
-            f"{position:<9} "
-            f"{strategy_lines[0]}\n"
-        )
-        for line in strategy_lines[1:]:
-            f.write(f"{'':<63}{line}\n")
-        f.write("-" * 80 + "\n")
+        for r in results:
+            f.write(
+                f"{r['asset']:<12}"
+                f"{r['date']:<12}"
+                f"{r['close']:<10.2f}  "
+                f"{r['prob_up']*100:>6.2f} %   "
+                f"{fmt_signal(r['signal']):<15} "
+                f"{r['position']:<9} "
+                f"{r['strategy_lines'][0]}\n"
+            )
 
-def finalize_forecast():
-    with open(OUT_FILE, "a", encoding="utf-8") as f:
+            # weitere Strategieregeln (max. 1–2 Zeilen)
+            for line in r['strategy_lines'][1:]:
+                f.write(
+                    f"{'':<52}{line}\n"
+                )
+
+            f.write("-" * 80 + "\n")
+
         f.write("=" * 80 + "\n")
