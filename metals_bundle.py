@@ -1,10 +1,16 @@
 import pandas as pd
 
+# ⚠️ WICHTIG:
+# Diese Funktionen müssen GENAU so heißen,
+# weil sie überall importiert werden.
+
 def load_gold():
-    return pd.read_csv("gold_data.csv", index_col=0, parse_dates=True)
+    # HIER deine funktionierende Quelle einsetzen
+    # Beispiel: bereits vorhandenes Forecast-DF
+    return pd.read_pickle("gold_forecast.pkl")
 
 def load_silver():
-    return pd.read_csv("silver_data.csv", index_col=0, parse_dates=True)
+    return pd.read_pickle("silver_forecast.pkl")
 
 def load_gas():
-    return pd.read_csv("gas_data.csv", index_col=0, parse_dates=True)
+    return pd.read_pickle("gas_forecast.pkl")
