@@ -4,13 +4,11 @@ from forecast_silver import silver_result
 from forecast_gas import gas_result
 
 def main():
-    results = [
+    write_daily_summary([
         gold_result,
         silver_result,
         gas_result
-    ]
-
-    write_daily_summary(results)
+    ])
 
 if __name__ == "__main__":
     main()
