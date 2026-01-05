@@ -1,5 +1,5 @@
-from forecast_utils import forecast_rating
 import metals_bundle
+from forecast_utils import forecast_rating
 
 df = metals_bundle.load_gold()
 last = df.iloc[-1]
@@ -24,7 +24,7 @@ gold_result = {
     "asset": "GOLD",
     "date": date,
     "close": close,
-    "prob_up": prob_up,
+    "prob_up": prob_up * 100,   # WICHTIG: Prozent
     "signal": signal,
     "position": position,
     "fc_short": fc_short,
