@@ -1,23 +1,16 @@
-from forecast_writer import init_forecast_file, finalize_forecast
-from forecast_gold import forecast_gold
-from forecast_silver import forecast_silver
-from forecast_energy import forecast_gas
+from forecast_writer import write_daily_summary
+from forecast_gold import gold_result
+from forecast_silver import silver_result
+from forecast_gas import gas_result
 
 def main():
-    init_forecast_file()
+    results = [
+        gold_result,
+        silver_result,
+        gas_result
+    ]
 
-    forecast_gold()
-    forecast_silver()
-
-    # Gas – Beispielwerte aus Modell
-    forecast_gas(
-        date="2026-01-05",
-        close=3.51,
-        prob_up=0.4599
-    )
-
-    finalize_forecast()
-    print("[OK] forecast_output.txt written")
+    write_daily_summary(results)
 
 if __name__ == "__main__":
     main()
