@@ -1,67 +1,38 @@
-MACRO REGIME 2026
-=================
-
-Regime: Reflation
-Confidence: niedrig
-
-Interpretation:
-Wachstum und Inflation steigen gemeinsam.
-
-===================================
-   MARKET FORECAST – DAILY UPDATE
-===================================
-Run time (UTC): 2026-01-05 08:47:35 UTC
-
---------- NATURAL GAS ---------
-Data date : LAST_AVAILABLE
-Close     : 3.62
-Prob UP   : 53.78%
-Prob DOWN : 46.22%
-Signal    : NO_TRADE
-
---------- OIL (WTI) ---------
-Data date : LAST_AVAILABLE
-Close     : 60.75
-Prob UP   : 47.0%
-Prob DOWN : 53.0%
-Signal    : NO_TRADE
-
 --------- GOLD ---------
-Data date : LAST_AVAILABLE
-Close     : 4314.4
-Prob UP   : 50.0%
-Prob DOWN : 50.0%
+Data date : 2026-01-05
+Close     : Ticker
+GC=F    4439.6
+Name: 2026-01-05 00:00:00, dtype: float64
+Prob UP   : 50.25%
+Strategie:
+0.53–0.55 → 50 % Position
+≥ 0.55 → 100 % Position
+Kein Short | Max Hebel 5
 Signal    : NO_TRADE
+Position  : 0 %
 
 --------- SILVER ---------
-Data date : LAST_AVAILABLE
-Close     : 70.56
-Prob UP   : 50.0%
-Prob DOWN : 50.0%
+Data date : 2026-01-05
+Close     : Ticker
+SI=F    75.51
+Name: 2026-01-05 00:00:00, dtype: float64
+Prob UP   : 51.77%
+Strategie:
+≥ 0.96 → LONG
+LONG only | Max Hebel 15
+Stop-Loss -20 %
+Signal    : NO_TRADE
+Position  : 0 %
+
+--------- NATURAL GAS ---------
+Data date : 2026-01-05
+Close     : Ticker
+NG=F    3.49
+Name: 2026-01-05 00:00:00, dtype: float64
+Prob UP   : 45.92%
+Regeln:
+≥ 56 % → LONG
+≤ 44 % → SHORT
+Max Hebel 10 | SL -20 %
 Signal    : NO_TRADE
 
---------- COPPER ---------
-Data date : LAST_AVAILABLE
-Close     : 5.64
-Prob UP   : 50.0%
-Prob DOWN : 50.0%
-Signal    : NO_TRADE
-
---------- SP500 ---------
-Data date : LAST_AVAILABLE
-Close     : 6858.47
-Prob UP   : 50.0%
-Prob DOWN : 50.0%
-Signal    : NO_TRADE
-
---------- DAX ---------
-Data date : LAST_AVAILABLE
-Close     : 24539.34
-Prob UP   : 50.0%
-Prob DOWN : 50.0%
-Signal    : NO_TRADE
-
-===================================
-NOTE:
-All probabilities except Natural Gas are placeholders.
-System is structurally ready for live data integration.
