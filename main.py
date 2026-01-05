@@ -7,7 +7,7 @@ def main():
     write_daily_summary([
         gold_result(),
         silver_result(),
-        gas_result()
+        gas_result(),
     ])
 
 if __name__ == "__main__":
