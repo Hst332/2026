@@ -1,16 +1,18 @@
-import pandas as pd
+# metals_bundle.py
+# Zentrale Datenquelle – KEINE Files, KEIN I/O
 
-# ⚠️ WICHTIG:
-# Diese Funktionen müssen GENAU so heißen,
-# weil sie überall importiert werden.
+from forecast_gold import df_gold
+from forecast_silver import df_silver
+from forecast_gas import df_gas
+
 
 def load_gold():
-    # HIER deine funktionierende Quelle einsetzen
-    # Beispiel: bereits vorhandenes Forecast-DF
-    return pd.read_pickle("gold_forecast.pkl")
+    return df_gold.copy()
+
 
 def load_silver():
-    return pd.read_pickle("silver_forecast.pkl")
+    return df_silver.copy()
+
 
 def load_gas():
-    return pd.read_pickle("gas_forecast.pkl")
+    return df_gas.copy()
