@@ -24,9 +24,12 @@ def gold_trading_signal(df):
         "signal": signal
     }
 
+# -------------------------------------------------
+# 🔧 WRAPPER – für metals_bundle (WICHTIG)
+# -------------------------------------------------
+def forecast_gold_2026(df):
+    return gold_trading_signal(df)
 
-# -------------------------------------------------
-# OPTIONAL: nur wenn Datei DIREKT gestartet wird
-# -------------------------------------------------
+
 if __name__ == "__main__":
-    print("forecast_gold.py ist ein Modul – kein Direktlauf vorgesehen")
+    print("forecast_gold.py ist ein Modul – kein Direktlauf")
