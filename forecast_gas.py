@@ -1,35 +1,34 @@
-import pandas as pd
-from datetime import datetime
+from forecast_utils import forecast_rating
 import metals_bundle
 
-# Lade Daten
 df = metals_bundle.load_gas()
 last = df.iloc[-1]
 
-last_date = last.name.strftime("%Y-%m-%d")
-close = float(last["Close"])
 prob_up = float(last["prob_up"])
+close = float(last["Close"])
+date = last.name.strftime("%Y-%m-%d")
 
-# Handelslogik
 if prob_up >= 0.56:
-    signal = "YES"
+    signal = "LONG"
     position = "100 %"
 elif prob_up <= 0.44:
-    signal = "YES"
-    position = "SHORT"
+    signal = "SHORT"
+    position = "100 %"
 else:
     signal = "NO_TRADE"
     position = "0 %"
 
-# Result-Dictionary
+fc_short, fc_mid = forecast_rating(prob_up)
+
 gas_result = {
     "asset": "NATURAL GAS",
-    "date": last_date,
+    "date": date,
     "close": close,
     "prob_up": prob_up,
     "signal": signal,
     "position": position,
-    "signal_rules": {"long":0.56, "short":0.44},
+    "fc_short": fc_short,
+    "fc_mid": fc_mid,
     "strategy_lines": [
         "≥ 56 % → LONG",
         "≤ 44 % → SHORT",
