@@ -1,35 +1,34 @@
-import pandas as pd
-from datetime import datetime
+from forecast_utils import forecast_rating
 import metals_bundle
 
-# Lade Daten
 df = metals_bundle.load_gold()
 last = df.iloc[-1]
 
-last_date = last.name.strftime("%Y-%m-%d")
-close = float(last["Close"])
 prob_up = float(last["prob_up"])
+close = float(last["Close"])
+date = last.name.strftime("%Y-%m-%d")
 
-# Handelslogik
-if 0.53 <= prob_up < 0.55:
-    signal = "YES"
-    position = "50 %"
-elif prob_up >= 0.55:
-    signal = "YES"
+if prob_up >= 0.55:
+    signal = "YES100"
     position = "100 %"
+elif prob_up >= 0.53:
+    signal = "YES50"
+    position = "50 %"
 else:
     signal = "NO_TRADE"
     position = "0 %"
 
-# Result-Dictionary
+fc_short, fc_mid = forecast_rating(prob_up)
+
 gold_result = {
     "asset": "GOLD",
-    "date": last_date,
+    "date": date,
     "close": close,
     "prob_up": prob_up,
     "signal": signal,
     "position": position,
-    "signal_rules": {"yes50":0.53, "yes100":0.55},
+    "fc_short": fc_short,
+    "fc_mid": fc_mid,
     "strategy_lines": [
         "0.53–0.55 → YES50",
         "≥ 0.55 → YES100",
