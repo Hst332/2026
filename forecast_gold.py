@@ -1,33 +1,35 @@
-from datetime import datetime
-import metals_bundle
+import yfinance as yf
+from forecast_writer import write_asset_row
 
 def forecast_gold():
-    df = metals_bundle.load_gold()
+    df = yf.download("GC=F", period="6mo", progress=False)
     last = df.iloc[-1]
 
-    date = last.name.strftime("%Y-%m-%d")
-    close = round(last["Close"], 2)
-    prob = float(last["prob_up"])
+    close = float(last["Close"])
+    prob_up = 0.5024  # ← kommt aus deinem Modell
 
-    if prob >= 0.55:
+    if prob_up >= 0.55:
         signal = "LONG"
-        size = "100 %"
-    elif prob >= 0.53:
-        signal = "LONG (partial)"
-        size = "50 %"
+        position = "100 %"
+    elif prob_up >= 0.53:
+        signal = "LONG"
+        position = "50 %"
     else:
         signal = "NO_TRADE"
-        size = "0 %"
+        position = "0 %"
 
-    return (
-        "--------- GOLD ---------\n"
-        f"Data date : {date}\n"
-        f"Close     : {close}\n"
-        f"Prob UP   : {prob:.2%}\n"
-        "Strategie:\n"
-        "0.53–0.55 → 50 % Position\n"
-        "≥ 0.55 → 100 % Position\n"
-        "Kein Short | Max Hebel 5\n"
-        f"Signal    : {signal}\n"
-        f"Position  : {size}\n\n"
+    strategy = [
+        "0.53–0.55 → 50 %",
+        "≥ 0.55 → 100 %",
+        "No Short | Lev ≤ 5"
+    ]
+
+    write_asset_row(
+        asset="GOLD",
+        date=last.name.strftime("%Y-%m-%d"),
+        close=close,
+        prob_up=prob_up,
+        signal=signal,
+        position=position,
+        strategy_lines=strategy
     )
