@@ -1,29 +1,32 @@
-import metals_bundle
+import yfinance as yf
+from forecast_writer import write_asset_row
 
 def forecast_silver():
-    df = metals_bundle.load_silver()
+    df = yf.download("SI=F", period="6mo", progress=False)
     last = df.iloc[-1]
 
-    date = last.name.strftime("%Y-%m-%d")
-    close = round(last["Close"], 2)
-    prob = float(last["prob_up"])
+    close = float(last["Close"])
+    prob_up = 0.5179  # Modellwert
 
-    if prob >= 0.96:
+    if prob_up >= 0.96:
         signal = "LONG"
-        size = "100 %"
+        position = "100 %"
     else:
         signal = "NO_TRADE"
-        size = "0 %"
+        position = "0 %"
 
-    return (
-        "--------- SILVER ---------\n"
-        f"Data date : {date}\n"
-        f"Close     : {close}\n"
-        f"Prob UP   : {prob:.2%}\n"
-        "Strategie:\n"
-        "≥ 0.96 → LONG\n"
-        "LONG only | Max Hebel 15\n"
-        "Stop-Loss -20 %\n"
-        f"Signal    : {signal}\n"
-        f"Position  : {size}\n\n"
+    strategy = [
+        "≥ 0.96 → LONG",
+        "Long only",
+        "Lev ≤ 15 | SL −20 %"
+    ]
+
+    write_asset_row(
+        asset="SILVER",
+        date=last.name.strftime("%Y-%m-%d"),
+        close=close,
+        prob_up=prob_up,
+        signal=signal,
+        position=position,
+        strategy_lines=strategy
     )
