@@ -1,9 +1,9 @@
 --------- GOLD ---------
 Data date : 2026-01-05
 Close     : Ticker
-GC=F    4439.6
+GC=F    4437.8
 Name: 2026-01-05 00:00:00, dtype: float64
-Prob UP   : 50.25%
+Prob UP   : 50.24%
 Strategie:
 0.53–0.55 → 50 % Position
 ≥ 0.55 → 100 % Position
@@ -14,9 +14,9 @@ Position  : 0 %
 --------- SILVER ---------
 Data date : 2026-01-05
 Close     : Ticker
-SI=F    75.51
+SI=F    75.64
 Name: 2026-01-05 00:00:00, dtype: float64
-Prob UP   : 51.77%
+Prob UP   : 51.79%
 Strategie:
 ≥ 0.96 → LONG
 LONG only | Max Hebel 15
@@ -27,9 +27,9 @@ Position  : 0 %
 --------- NATURAL GAS ---------
 Data date : 2026-01-05
 Close     : Ticker
-NG=F    3.49
+NG=F    3.51
 Name: 2026-01-05 00:00:00, dtype: float64
-Prob UP   : 45.92%
+Prob UP   : 45.99%
 Regeln:
 ≥ 56 % → LONG
 ≤ 44 % → SHORT
