@@ -62,5 +62,8 @@ jobs:
       - name: Run Gold Backtest
         run: python GOLD_BACKTEST.py
 
+       - name: Run Copper Backtest
+        run: python Copper_BACKTEST.py  
+
 
 
