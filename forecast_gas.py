@@ -4,6 +4,7 @@ from forecast_utils import model_score, forecast_trend, trade_signal
 def gas_result():
     df = metals_bundle.load_gas()
     last = df.iloc[-1]
+    close = float(last["Close"])
     score = model_score(df)
 
     return {
