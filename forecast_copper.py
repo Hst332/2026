@@ -47,20 +47,16 @@ def copper_result():
     price = load_copper_price()
     signal, position = copper_signal(price)
 
-    return {
+        return {
         "asset": "COPPER",
-        "date": datetime.utcnow().strftime("%Y-%m-%d"),
-        "close": price,              # ← FLOAT, KEIN STRING
-        "prob_up": "",               # leer = kompatibel
-        "signal": signal,
-        "position": position,
+        "date": last_date,
+        "close_str": f"{price_usd_kg:.2f} USD/kg",
+        "signal": "NO_TRADE",
         "forecast_1_5d": "=",
         "forecast_2_3w": "=",
-        "strategy": [
-            "≥ 12.0 → LONG 100 %",
-            "11.6–12.0 → LONG 75 %",
-            "11.0–11.6 → LONG 50 %",
-            "Long only | Lev ≤ 10 | SL −20 %",
-            "Price in USD/kg"
+        "strategy_lines": [
+            "Industrial metal | China driven",
+            "Macro & cycle sensitive",
+            "Phase-1 model (Gold-features)"
         ]
     }
