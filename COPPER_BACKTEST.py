@@ -1,6 +1,6 @@
 # =======================
-# COPPER BACKTEST – PHASE 1
-# identisch zu Gold
+# COPPER BACKTEST – PHASE 2
+# (Gold-Setup + ret_20)
 # =======================
 
 import numpy as np
@@ -14,7 +14,15 @@ from sklearn.preprocessing import StandardScaler
 # =======================
 SYMBOL = "HG=F"          # Copper Futures
 START_DATE = "2010-01-01"
-THRESHOLDS = [0.50, 0.52, 0.54, 0.56, 0.58, 0.60]
+
+THRESHOLDS = [
+    0.50,
+    0.52,
+    0.54,
+    0.56,
+    0.58,
+    0.60
+]
 
 # =======================
 # DATA
@@ -24,9 +32,10 @@ def load_copper():
 
     df = df[["Open", "High", "Low", "Close", "Volume"]].dropna()
 
-    # Features (identisch zu Gold)
-    df["ret_1"] = df["Close"].pct_change()
+    # Features (Gold + Momentum-Erweiterung)
+    df["ret_1"] = df["Close"].pct_change(1)
     df["ret_5"] = df["Close"].pct_change(5)
+    df["ret_20"] = df["Close"].pct_change(20)      # <<< PHASE 2 FEATURE
     df["ma_10"] = df["Close"].rolling(10).mean()
     df["ma_50"] = df["Close"].rolling(50).mean()
     df["ma_ratio"] = df["ma_10"] / df["ma_50"] - 1
@@ -42,7 +51,13 @@ def load_copper():
 # MODEL
 # =======================
 def fit_model(df):
-    features = ["ret_1", "ret_5", "ma_ratio", "vol_10"]
+    features = [
+        "ret_1",
+        "ret_5",
+        "ret_20",     # <<< NEU
+        "ma_ratio",
+        "vol_10"
+    ]
 
     X = df[features].values
     y = df["Target"].values
@@ -51,15 +66,17 @@ def fit_model(df):
     Xs = scaler.fit_transform(X)
 
     model = LogisticRegression(
-        max_iter=200,
+        max_iter=300,
         class_weight="balanced",
         solver="lbfgs"
     )
+
     model.fit(Xs, y)
 
     probs = model.predict_proba(Xs)[:, 1]
     df = df.copy()
     df["prob_up"] = probs
+
     return df
 
 # =======================
@@ -73,6 +90,7 @@ def backtest(df, threshold):
         target = int(row["Target"])
 
         if prob >= threshold:
+            # LONG trade
             ret = 1 if target == 1 else -1
             trades.append(ret)
 
@@ -89,15 +107,15 @@ def backtest(df, threshold):
     return {
         "threshold": threshold,
         "trades": len(trades),
-        "accuracy": (trades > 0).sum() / trades.size,
-        "profit": trades.sum()
+        "accuracy": trades[trades > 0].size / trades.size,
+        "profit": int(trades.sum())
     }
 
 # =======================
 # MAIN
 # =======================
 def main():
-    print("[START] Copper backtest (Phase 1 – Gold-Setup)")
+    print("[START] Copper backtest (Phase 2 – Gold-Setup + ret_20)")
 
     df = load_copper()
     df = fit_model(df)
@@ -116,9 +134,9 @@ def main():
         )
 
     out = pd.DataFrame(results)
-    out.to_csv("copper_backtest_results.csv", index=False)
+    out.to_csv("copper_backtest_phase2_results.csv", index=False)
 
-    print("\n[OK] copper_backtest_results.csv written")
+    print("\n[OK] copper_backtest_phase2_results.csv written")
 
 # =======================
 if __name__ == "__main__":
