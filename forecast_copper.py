@@ -25,6 +25,7 @@ def load_copper_price():
     close_kg = close_lb * LB_TO_KG
     return round(close_kg, 2)
 
+
 # =======================
 # SIGNAL LOGIC
 # =======================
@@ -41,6 +42,7 @@ def copper_signal(price):
 # =======================
 # RESULT (EXPORT)
 # =======================
+
 def copper_result():
     price = load_copper_price()
     signal, position = copper_signal(price)
@@ -48,8 +50,8 @@ def copper_result():
     return {
         "asset": "COPPER",
         "date": datetime.utcnow().strftime("%Y-%m-%d"),
-        "close": f"{price} USD/kg",
-        "prob_up": "",                 # bewusst leer (kompatibel)
+        "close": price,              # ← FLOAT, KEIN STRING
+        "prob_up": "",               # leer = kompatibel
         "signal": signal,
         "position": position,
         "forecast_1_5d": "=",
@@ -58,6 +60,7 @@ def copper_result():
             "≥ 12.0 → LONG 100 %",
             "11.6–12.0 → LONG 75 %",
             "11.0–11.6 → LONG 50 %",
-            "Long only | Lev ≤ 10 | SL −20 %"
+            "Long only | Lev ≤ 10 | SL −20 %",
+            "Price in USD/kg"
         ]
     }
