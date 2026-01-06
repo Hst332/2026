@@ -1,15 +1,22 @@
-def forecast_rating(prob_up: float):
-    """
-    Returns qualitative forecasts:
-    short term (1–5 days), mid term (2–3 weeks)
-    """
-    if prob_up >= 0.60:
-        return "++", "+"
-    elif prob_up >= 0.55:
-        return "+", "+"
-    elif prob_up >= 0.48:
-        return "=", "="
-    elif prob_up >= 0.42:
-        return "-", "-"
-    else:
-        return "--", "--"
+import numpy as np
+
+def model_score(df):
+    returns = df["Close"].pct_change().dropna()
+    mu = returns.tail(20).mean()
+    score = 0.5 + np.tanh(mu * 15) / 2
+    return round(score, 4)
+
+def forecast_trend(df, window):
+    r = df["Close"].pct_change().dropna().tail(window).mean()
+    if r > 0.002:
+        return "UP"
+    if r < -0.002:
+        return "DOWN"
+    return "="
+
+def trade_signal(score):
+    if score >= 0.55:
+        return "LONG"
+    if score <= 0.45:
+        return "SHORT"
+    return "NO_TRADE"
