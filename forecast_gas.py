@@ -15,6 +15,7 @@ def gas_result():
         "date": last.name.strftime("%Y-%m-%d"),
         "close": close,
         "prob_up": prob_up,
+        "model_score": f"{model_score:.2%}",
         "signal": "NO_TRADE",
         "position": "0 %",
         "strategy_lines": [
