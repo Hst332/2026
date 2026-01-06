@@ -4,7 +4,7 @@ def model_score(df):
     returns = df["Close"].pct_change().dropna()
     mu = returns.tail(20).mean()
     score = 0.5 + np.tanh(mu * 15) / 2
-    return round(score, 4)
+    return float(df["prob_up"].iloc[-1])
 
 def forecast_trend(df, window):
     r = df["Close"].pct_change().dropna().tail(window).mean()
