@@ -3,14 +3,14 @@ from forecast_utils import model_score, forecast_trend, trade_signal
 
 def gold_result():
     df = metals_bundle.load_gold()
-    last = df.iloc[-1]
+    last = df.iloc[[-1]]  # bewusst DataFrame, kein Series
 
-    close = float(last["Close"])
+    close = float(last["Close"].iloc[0])
     score = model_score(df)
 
     return {
         "asset": "GOLD",
-        "date": last.name.strftime("%Y-%m-%d"),
+        "date": last.index[0].strftime("%Y-%m-%d"),
         "close": f"{close:.2f} USD/oz",
         "model_score": f"{score:.2%}",
         "signal": trade_signal(score),
