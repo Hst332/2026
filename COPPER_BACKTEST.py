@@ -1,64 +1,106 @@
+# =======================
+# COPPER BACKTEST – PHASE 1
+# identisch zu Gold
+# =======================
+
+import numpy as np
 import pandas as pd
+import yfinance as yf
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 
-# =========================
+# =======================
 # CONFIG
-# =========================
-DATA_FILE = "copper_data.csv"
+# =======================
+SYMBOL = "HG=F"          # Copper Futures
+START_DATE = "2010-01-01"
+THRESHOLDS = [0.50, 0.52, 0.54, 0.56, 0.58, 0.60]
 
-THRESHOLDS = [0.54, 0.55, 0.56, 0.58, 0.60, 0.62]
+# =======================
+# DATA
+# =======================
+def load_copper():
+    df = yf.download(SYMBOL, start=START_DATE, progress=False)
 
-# =========================
-# LOAD DATA
-# =========================
-def load_data():
-    df = pd.read_csv(DATA_FILE, index_col=0, parse_dates=True)
+    df = df[["Open", "High", "Low", "Close", "Volume"]].dropna()
 
-    required_cols = {"Close", "prob_up", "Target"}
-    if not required_cols.issubset(df.columns):
-        raise ValueError(f"CSV must contain columns: {required_cols}")
+    # Features (identisch zu Gold)
+    df["ret_1"] = df["Close"].pct_change()
+    df["ret_5"] = df["Close"].pct_change(5)
+    df["ma_10"] = df["Close"].rolling(10).mean()
+    df["ma_50"] = df["Close"].rolling(50).mean()
+    df["ma_ratio"] = df["ma_10"] / df["ma_50"] - 1
+    df["vol_10"] = df["ret_1"].rolling(10).std()
+
+    # Target: nächster Tag höher?
+    df["Target"] = (df["Close"].shift(-1) > df["Close"]).astype(int)
 
     df = df.dropna()
     return df
 
+# =======================
+# MODEL
+# =======================
+def fit_model(df):
+    features = ["ret_1", "ret_5", "ma_ratio", "vol_10"]
 
-# =========================
-# BACKTEST LOGIC
-# =========================
+    X = df[features].values
+    y = df["Target"].values
+
+    scaler = StandardScaler()
+    Xs = scaler.fit_transform(X)
+
+    model = LogisticRegression(
+        max_iter=200,
+        class_weight="balanced",
+        solver="lbfgs"
+    )
+    model.fit(Xs, y)
+
+    probs = model.predict_proba(Xs)[:, 1]
+    df = df.copy()
+    df["prob_up"] = probs
+    return df
+
+# =======================
+# BACKTEST (LONG ONLY)
+# =======================
 def backtest(df, threshold):
-    trades = 0
-    wins = 0
-    profit = 0
+    trades = []
 
     for _, row in df.iterrows():
         prob = float(row["prob_up"])
         target = int(row["Target"])
 
-        # LONG only
         if prob >= threshold:
-            trades += 1
-            if target == 1:
-                wins += 1
-                profit += 1
-            else:
-                profit -= 1
+            ret = 1 if target == 1 else -1
+            trades.append(ret)
 
-    accuracy = (wins / trades * 100) if trades > 0 else 0.0
+    if len(trades) == 0:
+        return {
+            "threshold": threshold,
+            "trades": 0,
+            "accuracy": 0.0,
+            "profit": 0
+        }
+
+    trades = np.array(trades)
 
     return {
-        "TH": threshold,
-        "Trades": trades,
-        "Accuracy": accuracy,
-        "Profit": profit,
+        "threshold": threshold,
+        "trades": len(trades),
+        "accuracy": (trades > 0).sum() / trades.size,
+        "profit": trades.sum()
     }
 
-
-# =========================
+# =======================
 # MAIN
-# =========================
+# =======================
 def main():
-    print("[START] Copper backtest")
+    print("[START] Copper backtest (Phase 1 – Gold-Setup)")
 
-    df = load_data()
+    df = load_copper()
+    df = fit_model(df)
 
     results = []
 
@@ -67,19 +109,17 @@ def main():
         results.append(res)
 
         print(
-            f"TH={res['TH']:.2f} | "
-            f"Trades={res['Trades']} | "
-            f"Accuracy={res['Accuracy']:.2f}% | "
-            f"Profit={res['Profit']}"
+            f"TH={th:.2f} | "
+            f"Trades={res['trades']} | "
+            f"Accuracy={res['accuracy']*100:.2f}% | "
+            f"Profit={res['profit']}"
         )
 
-    # Save results
     out = pd.DataFrame(results)
     out.to_csv("copper_backtest_results.csv", index=False)
 
     print("\n[OK] copper_backtest_results.csv written")
 
-
-# =========================
+# =======================
 if __name__ == "__main__":
     main()
