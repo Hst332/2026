@@ -9,7 +9,10 @@ def forecast_trend(df, days):
     """
     Trend über Zeitraum (1–5 Tage / 2–3 Wochen)
     """
-    r = df["Close"].iloc[-1] / df["Close"].iloc[-days] - 1
+    last = float(df["Close"].iloc[-1])
+    past = float(df["Close"].iloc[-days])
+
+    r = last / past - 1
 
     if r > 0.002:
         return "↑"
@@ -17,6 +20,7 @@ def forecast_trend(df, days):
         return "↓"
     else:
         return "="
+
 
 
 def trade_signal(score, threshold=0.55):
