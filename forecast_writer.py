@@ -7,28 +7,28 @@ def write_daily_summary(results, filename="forecast_output.txt"):
         f.write("MARKET FORECAST – DAILY SUMMARY\n")
         f.write(f"Run time (UTC): {datetime.utcnow():%Y-%m-%d %H:%M:%S}\n")
         f.write("=" * 100 + "\n")
+
         f.write(
-            "ASSET        DATE        CLOSE      PROB UP   SIGNAL     POSITION       FORECAST 1–5D  FORECAST 2–3W   STRATEGY\n"
+            "ASSET        DATE        CLOSE        PROB UP   SIGNAL     POSITION   "
+            "FORECAST 1–5D  FORECAST 2–3W   STRATEGY\n"
         )
         f.write("=" * 100 + "\n")
 
         for r in results:
-            # Zeile 1: Asset + Datum + Close + Prob + Forecast + erste Strategie-Zeile
             f.write(
-                f"{r['asset']:<12}"
+                f"{r['asset']:<12}"                     # ← STRING, KEIN .f
                 f"{r['date']:<12}"
-                f"{r['close']:<10.2f} "
-                f"{r['prob_up']*100:>6.2f} %   "
+                f"{r['close']:<12.2f}"                  # ← FLOAT OK
+                f"{r['prob_up']:<9}"
                 f"{r['signal']:<10}"
-                f"{r['position']:<12}"
-                f"{r['forecast_short']:^14}"
-                f"{r['forecast_mid']:^16}"
-                f"{r['strategy_lines'][0]}\n"
+                f"{r['position']:<10}"
+                f"{r['forecast_1_5d']:^14}"
+                f"{r['forecast_2_3w']:^16}"
+                f"{r['strategy'][0]}\n"
             )
 
-            # Rest der Strategielinien darunter: 78 Zeichen einrücken, Forecast-Spalten leer
-            for line in r["strategy_lines"][1:]:
-                f.write(f"{'':<78}{line}\n")
+            for line in r["strategy"][1:]:
+                f.write(f"{'':<86}{line}\n")
 
             f.write("-" * 100 + "\n")
 
