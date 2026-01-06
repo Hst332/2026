@@ -5,7 +5,7 @@ def gold_result():
     df = metals_bundle.load_gold()
     last = df.iloc[[-1]]  # bewusst DataFrame, kein Series
 
-    close = float(last["Close"].iloc[0])
+    close = last["Close"].iloc[0].item()
     score = model_score(df)
 
     return {
