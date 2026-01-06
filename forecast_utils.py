@@ -1,33 +1,37 @@
+# forecast_utils.py
+
 def model_score(df):
     """
-    Aktueller Modell-Score (letzte Wahrscheinlichkeit für UP)
+    MODEL SCORE = normalisierte Trendstärke der letzten 20 Tage
     """
-    return float(df["prob_up"].iloc[-1])
+    if len(df) < 21:
+        return 0.5
+
+    last = float(df["Close"].iloc[-1])
+    past = float(df["Close"].iloc[-21])
+
+    r = (last / past) - 1
+
+    # Clamp auf [0,1] um interpretierbar zu bleiben
+    score = 0.5 + r
+    return max(0.0, min(1.0, score))
 
 
 def forecast_trend(df, days):
-    """
-    Trend über Zeitraum (1–5 Tage / 2–3 Wochen)
-    """
+    if len(df) <= days:
+        return "="
+
     last = float(df["Close"].iloc[-1])
     past = float(df["Close"].iloc[-days])
 
-    r = last / past - 1
+    r = (last / past) - 1
 
-    if r > 0.002:
-        return "↑"
-    elif r < -0.002:
-        return "↓"
-    else:
-        return "="
-
-
-
-def trade_signal(score, threshold=0.55):
-    """
-    Einheitliche Trade-Logik
-    """
-    if score >= threshold:
-        return "LONG"
-    else:
-        return "NO_TRADE"
+    if r > 0.02:
+        return "++"
+    if r > 0.005:
+        return "+"
+    if r < -0.02:
+        return "--"
+    if r < -0.005:
+        return "-"
+    return "="
