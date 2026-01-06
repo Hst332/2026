@@ -1,34 +1,30 @@
+import yfinance as yf
 import pandas as pd
-import os
-
-DATA_DIR = "data"
 
 def load_gold():
-    path = os.path.join(DATA_DIR, "gold.csv")
-    df = pd.read_csv(path, parse_dates=["Date"], index_col="Date")
+    ticker = "GC=F"  # Gold Futures
+    df = yf.download(ticker, period="60d", interval="1d")
+    df["prob_up"] = 0.53  # Platzhalter für Forecast-Modelle
+    df.index.name = "Date"
     return df
 
 def load_silver():
-    path = os.path.join(DATA_DIR, "silver.csv")
-    df = pd.read_csv(path, parse_dates=["Date"], index_col="Date")
+    ticker = "SI=F"  # Silber Futures
+    df = yf.download(ticker, period="60d", interval="1d")
+    df["prob_up"] = 0.50
+    df.index.name = "Date"
     return df
 
 def load_gas():
-    path = os.path.join(DATA_DIR, "gas.csv")
-    df = pd.read_csv(path, parse_dates=["Date"], index_col="Date")
+    ticker = "NG=F"  # Natural Gas Futures
+    df = yf.download(ticker, period="60d", interval="1d")
+    df["prob_up"] = 0.56
+    df.index.name = "Date"
     return df
 
-# ✅ NEU: Copper laden
 def load_copper():
-    path = os.path.join(DATA_DIR, "copper.csv")
-    if not os.path.exists(path):
-        raise ValueError(
-            "Copper-Daten konnten nicht gefunden werden. Bitte CSV oder metals_bundle prüfen."
-        )
-    df = pd.read_csv(path, parse_dates=["Date"], index_col="Date")
-    # Sicherstellen, dass die benötigten Spalten da sind
-    required_cols = ["Close", "prob_up"]
-    for col in required_cols:
-        if col not in df.columns:
-            raise ValueError(f"Copper CSV muss Spalte '{col}' enthalten.")
+    ticker = "HG=F"  # Copper Futures
+    df = yf.download(ticker, period="60d", interval="1d")
+    df["prob_up"] = 0.535
+    df.index.name = "Date"
     return df
