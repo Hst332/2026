@@ -6,7 +6,7 @@ def gold_result():
 
     prob_up = float(last["prob_up"])
     close = float(last["Close"])
-    model_score = prob_up
+    model_score = prob_up  # für die Spalte MODEL SCORE
 
     return {
         "asset": "GOLD",
