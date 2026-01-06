@@ -7,6 +7,8 @@ def gas_result():
     prob_up = float(last["prob_up"])
     close = float(last["Close"])
 
+    model_score = prob_up  # NEU: für die Spalte MODEL SCORE
+    
     return {
         "asset": "NATURAL GAS",
         "date": last.name.strftime("%Y-%m-%d"),
