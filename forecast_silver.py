@@ -3,8 +3,9 @@ from forecast_utils import model_score, forecast_trend, trade_signal
 
 def silver_result():
     df = metals_bundle.load_silver()
-    last = df.iloc[-1]
-    close = float(last["Close"])
+    last = df.iloc[[-1]]  # bewusst DataFrame, kein Series
+
+    close = float(last["Close"].iloc[0])
     score = model_score(df)
 
     return {
