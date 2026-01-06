@@ -18,6 +18,7 @@ def copper_result():
         "asset": "COPPER",
         "date": date,
         "close_str": f"{price_kg:.2f} USD/kg",
+        "model_score": f"{model_score:.2%}",
         "signal": "NO_TRADE",
         "forecast_1_5d": "=",
         "forecast_2_3w": "=",
