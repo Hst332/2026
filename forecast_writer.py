@@ -2,6 +2,9 @@ from datetime import datetime
 
 def write_daily_summary(results, filename="forecast_output.txt"):
 
+    def g(r, key, default=""):
+        return r.get(key, default)
+
     with open(filename, "w", encoding="utf-8") as f:
         f.write("=" * 100 + "\n")
         f.write("MARKET FORECAST – DAILY SUMMARY\n")
@@ -9,26 +12,24 @@ def write_daily_summary(results, filename="forecast_output.txt"):
         f.write("=" * 100 + "\n")
 
         f.write(
-            "ASSET        DATE        CLOSE        PROB UP   SIGNAL     POSITION   "
+            "ASSET        DATE        CLOSE        SIGNAL        "
             "FORECAST 1–5D  FORECAST 2–3W   STRATEGY\n"
         )
         f.write("=" * 100 + "\n")
 
         for r in results:
             f.write(
-                f"{r['asset']:<12}"                     # ← STRING, KEIN .f
-                f"{r['date']:<12}"
-                f"{r['close']:<12.2f}"                  # ← FLOAT OK
-                f"{r['prob_up']:<9}"
-                f"{r['signal']:<10}"
-                f"{r['position']:<10}"
-                f"{r['forecast_1_5d']:^14}"
-                f"{r['forecast_2_3w']:^16}"
-                f"{r['strategy'][0]}\n"
+                f"{g(r,'asset'):<12}"
+                f"{g(r,'date'):<12}"
+                f"{g(r,'close_str'):<12}"
+                f"{g(r,'signal','NO_TRADE'):<14}"
+                f"{g(r,'forecast_1_5d','='):^14}"
+                f"{g(r,'forecast_2_3w','='):^16}"
+                f"{g(r,'strategy_lines',[''])[0]}\n"
             )
 
-            for line in r["strategy"][1:]:
-                f.write(f"{'':<86}{line}\n")
+            for line in g(r, "strategy_lines", [])[1:]:
+                f.write(f"{'':<68}{line}\n")
 
             f.write("-" * 100 + "\n")
 
