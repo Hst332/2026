@@ -5,12 +5,13 @@ def gold_result():
     df = metals_bundle.load_gold()
     last = df.iloc[-1]
 
+    close = float(last["Close"])
     score = model_score(df)
 
     return {
         "asset": "GOLD",
         "date": last.name.strftime("%Y-%m-%d"),
-        "close": f"{last['Close']:.2f} USD/oz",
+        "close": f"{close:.2f} USD/oz",
         "model_score": f"{score:.2%}",
         "signal": trade_signal(score),
         "forecast_1_5d": forecast_trend(df, 5),
