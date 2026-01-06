@@ -1,30 +1,18 @@
 import yfinance as yf
-import pandas as pd
+
+def _load(symbol):
+    df = yf.download(symbol, period="2y", interval="1d", auto_adjust=True)
+    df = df.dropna()
+    return df
 
 def load_gold():
-    ticker = "GC=F"  # Gold Futures
-    df = yf.download(ticker, period="60d", interval="1d")
-    df["prob_up"] = 0.53  # Platzhalter für Forecast-Modelle
-    df.index.name = "Date"
-    return df
+    return _load("GC=F")      # Gold Futures
 
 def load_silver():
-    ticker = "SI=F"  # Silber Futures
-    df = yf.download(ticker, period="60d", interval="1d")
-    df["prob_up"] = 0.50
-    df.index.name = "Date"
-    return df
+    return _load("SI=F")      # Silver Futures
 
 def load_gas():
-    ticker = "NG=F"  # Natural Gas Futures
-    df = yf.download(ticker, period="60d", interval="1d")
-    df["prob_up"] = 0.56
-    df.index.name = "Date"
-    return df
+    return _load("NG=F")      # Natural Gas
 
 def load_copper():
-    ticker = "HG=F"  # Copper Futures
-    df = yf.download(ticker, period="60d", interval="1d")
-    df["prob_up"] = 0.535
-    df.index.name = "Date"
-    return df
+    return _load("HG=F")      # Copper Futures
