@@ -1,13 +1,12 @@
 import metals_bundle
 
 def copper_result():
-    df = metals_bundle.load_copper()  # echte Copper-Daten laden
+    df = metals_bundle.load_copper()
     last = df.iloc[-1]
 
     prob_up = float(last["prob_up"])
     close = float(last["Close"])
-    
-    model_score = prob_up  # für Spalte MODEL SCORE
+    model_score = prob_up
 
     return {
         "asset": "COPPER",
