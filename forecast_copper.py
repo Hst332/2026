@@ -12,6 +12,8 @@ def copper_result():
     price_lb = float(last["Close"])
     price_kg = price_lb * 2.20462
 
+    model_score = prob_up  # NEU: für die Spalte MODEL SCORE
+    
     return {
         "asset": "COPPER",
         "date": date,
