@@ -20,8 +20,7 @@ def copper_result():
         "forecast_1_5d": "=",
         "forecast_2_3w": "=",
         "strategy_lines": [
-            "Industrial metal | China driven",
-            "Cycle & infrastructure sensitive",
-            "Phase-2 model (Gold + ret_20)"
+            "0.54–0.56 → LONG ",
+            "No Short; only Long",
         ],
     }
