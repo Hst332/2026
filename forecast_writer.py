@@ -29,7 +29,7 @@ def write_daily_summary(results, filename="forecast_output.txt"):
             )
 
             for line in g(r, "strategy_lines", [])[1:]:
-                f.write(f"{'':<68}{line}\n")
+                f.write(f"{'':<98}{line}\n")
 
             f.write("-" * 100 + "\n")
 
