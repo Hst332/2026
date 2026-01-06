@@ -2,10 +2,10 @@ import metals_bundle
 from forecast_utils import model_score, forecast_trend, trade_signal
 
 def copper_result():
-    df = metals_bundle.load_copper()
-    last = df.iloc[[-1]]  # bewusst DataFrame, kein Series
+    df = metals_bundle.load_gold()
+    last = df.iloc[-1]
 
-    close = float(last["Close"].iloc[0])
+    close = float(last["Close"])
     score = model_score(df)
 
     return {
