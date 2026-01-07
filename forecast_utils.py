@@ -1,20 +1,43 @@
+def _close_series(df):
+    """
+    Ensure Close is always a 1D float Series
+    """
+    close = df["Close"]
+
+    # yfinance MultiIndex fallback
+    if hasattr(close, "columns"):
+        close = close.iloc[:, 0]
+
+    return close.astype(float)
+
+
 def model_score(df):
-    """
-    Simple momentum-based score (0–1)
-    """
-    last = df["Close"].iloc[-1]
-    past = df["Close"].iloc[-21]
+    close = _close_series(df)
+
+    if len(close) < 21:
+        return 0.5
+
+    last = close.iloc[-1]
+    past = close.iloc[-21]
+
     r = (last - past) / past
 
     # normalize to 0–1
-    score = 0.5 + max(min(r * 5, 0.5), -0.5)
+    score = 0.5 + max(min(float(r) * 5, 0.5), -0.5)
     return float(score)
 
 
 def forecast_trend(df, days):
-    last = df["Close"].iloc[-1]
-    past = df["Close"].iloc[-days]
+    close = _close_series(df)
+
+    if len(close) < days:
+        return "0"
+
+    last = close.iloc[-1]
+    past = close.iloc[-days]
+
     r = (last - past) / past
+    r = float(r)
 
     if r > 0.02:
         return "++"
