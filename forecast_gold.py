@@ -5,8 +5,8 @@ def gold_result():
     df = metals_bundle.load_gold()
     last = df.iloc[-1]
 
-    close = float(last["Close"])
-    score = model_score(df)
+    close = float(df["Close"].iloc[-1])
+    date = df.index[-1].strftime("%Y-%m-%d")
 
     return {
         "asset": "GOLD",
