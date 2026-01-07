@@ -4,6 +4,7 @@ from forecast_gas import gas_result
 from forecast_copper import copper_result
 from forecast_writer import write_daily_summary
 
+
 def main():
     write_daily_summary([
         gold_result(),
@@ -11,6 +12,7 @@ def main():
         gas_result(),
         copper_result(),
     ])
+
 
 if __name__ == "__main__":
     main()
