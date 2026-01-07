@@ -7,7 +7,9 @@ def gas_result():
 
     close = float(df["Close"].iloc[-1])
     date = df.index[-1].strftime("%Y-%m-%d")
-
+    
+    score = model_score(df)
+    
     return {
         "asset": "NATURAL GAS",
         "date": last.name.strftime("%Y-%m-%d"),
