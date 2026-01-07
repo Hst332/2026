@@ -1,5 +1,14 @@
-def model_score(df):
-    return float(df["prob_up"].iloc[-1])
+def model_score(df, days=21):
+    last = float(df["Close"].iloc[-1])
+    past = float(df["Close"].iloc[-days])
+
+    r = (last / past) - 1
+
+    # normieren auf ca. 0.40 – 0.60
+    score = 0.5 + r * 5
+
+    return max(0.0, min(1.0, score))
+
 
 
 def forecast_trend(df, days):
