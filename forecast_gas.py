@@ -1,5 +1,5 @@
 import metals_bundle
-from forecast_utils import model_score, forecast_trend, trade_signal
+from forecast_utils import model_score, forecast_trend
 
 def gas_result():
     df = metals_bundle.load_gold()
