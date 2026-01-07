@@ -11,7 +11,7 @@ def gas_result():
     return {
         "asset": "NATURAL GAS",
         "date": last.name.strftime("%Y-%m-%d"),
-        "close": f"{last['Close']:.2f} USD/MMBtu",
+        "close": f"{close:.2f} USD/MMBtu",
         "model_score": f"{score:.2%}",
         "signal": "NO_TRADE",
         "forecast_1_5d": forecast_trend(df, 5),
