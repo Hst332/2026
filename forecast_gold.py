@@ -1,20 +1,27 @@
-import yfinance as yf
-from datetime import datetime
+import metals_bundle
 from forecast_utils import model_score, forecast_trend, trade_signal
 
-
 def gold_result():
-    df = yf.download("GC=F", period="1y", interval="1d")
+    df = metals_bundle.load_gold()
+    
+    close = df["Close"]
+    if hasattr(close, "columns"):  # MultiIndex fallback
+        close = close.iloc[:, 0]
+    close = float(close.iloc[-1])
 
-    close = df["Close"].iloc[-1]
     score = model_score(df)
 
     return {
         "asset": "GOLD",
-        "date": datetime.utcnow().strftime("%Y-%m-%d"),
+        "date": df.index[-1].strftime("%Y-%m-%d"),
         "close": f"{close:.2f} USD/oz",
         "model_score": f"{score:.2%}",
         "signal": trade_signal(score),
-        "f_short": forecast_trend(df, 5),
-        "f_mid": forecast_trend(df, 21),
+        "forecast_1_5d": forecast_trend(df, 5),
+        "forecast_2_3w": forecast_trend(df, 21),
+        "strategy_lines": [
+            "0.53–0.55 → YES50",
+            "≥ 0.55 → YES100",
+            "No Short | Lev ≤ 5",
+        ],
     }
