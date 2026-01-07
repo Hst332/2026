@@ -1,37 +1,29 @@
-# forecast_utils.py
-
 def model_score(df):
-    """
-    MODEL SCORE = normalisierte Trendstärke der letzten 20 Tage
-    """
-    if len(df) < 21:
-        return 0.5
-
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-21])
-
-    r = (last / past) - 1
-
-    # Clamp auf [0,1] um interpretierbar zu bleiben
-    score = 0.5 + r
-    return max(0.0, min(1.0, score))
+    return float(df["prob_up"].iloc[-1])
 
 
 def forecast_trend(df, days):
-    if len(df) <= days:
-        return "="
-
     last = float(df["Close"].iloc[-1])
     past = float(df["Close"].iloc[-days])
 
     r = (last / past) - 1
 
-    if r > 0.02:
+    if r > 0.01:
         return "++"
-    if r > 0.005:
+    elif r > 0.002:
         return "+"
-    if r < -0.02:
+    elif r < -0.01:
         return "--"
-    if r < -0.005:
+    elif r < -0.002:
         return "-"
-    return "="
+    else:
+        return "="
+
+
+def trade_signal(score):
+    if score >= 0.55:
+        return "LONG"
+    elif score <= 0.45:
+        return "SHORT"
+    else:
+        return "NO_TRADE"
