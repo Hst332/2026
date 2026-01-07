@@ -1,26 +1,21 @@
-import metals_bundle
+import yfinance as yf
+from datetime import datetime
 from forecast_utils import model_score, forecast_trend, trade_signal
 
+
 def copper_result():
-    df = metals_bundle.load_copper()
+    df = yf.download("HG=F", period="1y", interval="1d")
 
-    close_lb = float(df["Close"].iloc[-1])   # USD / lb
-    close_kg = close_lb * 2.20462             # USD / kg
-    date = df.index[-1].strftime("%Y-%m-%d")
-
+    close_lb = df["Close"].iloc[-1]          # USD / lb
+    close_kg = close_lb * 2.20462            # USD / kg
     score = model_score(df)
 
     return {
         "asset": "COPPER",
-        "date": date,
+        "date": datetime.utcnow().strftime("%Y-%m-%d"),
         "close": f"{close_kg:.2f} USD/kg",
         "model_score": f"{score:.2%}",
         "signal": trade_signal(score),
-        "forecast_1_5d": forecast_trend(df, 5),
-        "forecast_2_3w": forecast_trend(df, 21),
-        "strategy_lines": [
-            "Industrial metal | China driven",
-            "Cycle & infrastructure sensitive",
-            "Phase-2 momentum model",
-        ],
+        "f_short": forecast_trend(df, 5),
+        "f_mid": forecast_trend(df, 21),
     }
