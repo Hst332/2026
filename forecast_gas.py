@@ -5,7 +5,7 @@ def gas_result():
     df = metals_bundle.load_gold()
     last = df.iloc[-1]
 
-    cclose = float(df["Close"].iloc[-1])
+    close = float(df["Close"].iloc[-1])
     date = df.index[-1].strftime("%Y-%m-%d")
 
     return {
