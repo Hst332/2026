@@ -1,38 +1,37 @@
-def model_score(df, days=21):
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-days])
+def model_score(df):
+    """
+    Simple momentum-based score (0–1)
+    """
+    last = df["Close"].iloc[-1]
+    past = df["Close"].iloc[-21]
+    r = (last - past) / past
 
-    r = (last / past) - 1
-
-    # normieren auf ca. 0.40 – 0.60
-    score = 0.5 + r * 5
-
-    return max(0.0, min(1.0, score))
-
+    # normalize to 0–1
+    score = 0.5 + max(min(r * 5, 0.5), -0.5)
+    return float(score)
 
 
 def forecast_trend(df, days):
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-days])
+    last = df["Close"].iloc[-1]
+    past = df["Close"].iloc[-days]
+    r = (last - past) / past
 
-    r = (last / past) - 1
-
-    if r > 0.01:
+    if r > 0.02:
         return "++"
-    elif r > 0.002:
+    elif r > 0.005:
         return "+"
-    elif r < -0.01:
+    elif r < -0.02:
         return "--"
-    elif r < -0.002:
+    elif r < -0.005:
         return "-"
     else:
-        return "="
+        return "0"
 
 
 def trade_signal(score):
-    if score >= 0.55:
+    if score >= 0.60:
         return "LONG"
-    elif score <= 0.45:
+    elif score <= 0.40:
         return "SHORT"
     else:
         return "NO_TRADE"
