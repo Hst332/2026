@@ -16,6 +16,8 @@ def write_daily_summary(results):
     print("=" * 100)
 
     for r in results:
+       strategy = r.get("strategy", "-")
+
         print(
             f"{r['asset']:<12}"
             f"{r['date']:<12}"
@@ -24,7 +26,10 @@ def write_daily_summary(results):
             f"{r['signal']:<12}"
             f"{r['forecast_1_5d']:<15}"
             f"{r['forecast_2_3w']:<15}"
-            f"{r['strategy']}"
+            f"{strategy}"
         )
+
+           
+
 
     print("=" * 100)
