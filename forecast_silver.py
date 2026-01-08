@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 
-def silver_result():
+def gold_result():
     df = load_silver()
     
     
