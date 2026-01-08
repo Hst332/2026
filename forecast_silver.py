@@ -6,11 +6,11 @@ from datetime import datetime
 
 
 def gold_result():
-df = load_silber()
-
-
-close = df["Close"].iloc[-1].item()
-score = model_score(df)
+    df = load_silber()
+    
+    
+    close = df["Close"].iloc[-1].item()
+    score = model_score(df)
 
 
 return {
