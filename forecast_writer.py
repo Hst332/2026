@@ -1,32 +1,30 @@
+# forecast_writer.py
+
 from datetime import datetime
 
-def write_daily_summary(results, filename="forecast_output.txt"):
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write("=" * 100 + "\n")
-        f.write("MARKET FORECAST – DAILY SUMMARY\n")
-        f.write(f"Run time (UTC): {datetime.utcnow():%Y-%m-%d %H:%M:%S}\n")
-        f.write("=" * 100 + "\n")
-        f.write(
-            "ASSET        DATE        CLOSE        MODEL SCORE   SIGNAL        "
-            "FORECAST 1–5D  FORECAST 2–3W   STRATEGY\n"
+def write_daily_summary(results):
+    print("=" * 100)
+    print("MARKET FORECAST – DAILY SUMMARY")
+    print(f"Run time (UTC): {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 100)
+    print(
+        f"{'ASSET':<12}{'DATE':<12}{'CLOSE':<18}"
+        f"{'MODEL SCORE':<14}{'SIGNAL':<12}"
+        f"{'FORECAST 1–5D':<15}{'FORECAST 2–3W':<15}"
+        f"STRATEGY"
+    )
+    print("=" * 100)
+
+    for r in results:
+        print(
+            f"{r['asset']:<12}"
+            f"{r['date']:<12}"
+            f"{r['close']:<18}"
+            f"{r['model_score']:<14}"
+            f"{r['signal']:<12}"
+            f"{r['forecast_1_5d']:<15}"
+            f"{r['forecast_2_3w']:<15}"
+            f"{r['strategy']}"
         )
-        f.write("=" * 100 + "\n")
 
-        for r in results:
-            f.write(
-                f"{r['asset']:<12}"
-                f"{r['date']:<12}"
-                f"{r['close']:<14}"
-                f"{r['model_score']:^14}"
-                f"{r['signal']:<14}"
-                f"{r['forecast_1_5d']:^14}"
-                f"{r['forecast_2_3w']:^16}"
-                f"{r['strategy_lines'][0]}\n"
-            )
-
-            for line in r["strategy_lines"][1:]:
-                f.write(f"{'':<82}{line}\n")
-
-            f.write("-" * 100 + "\n")
-
-        f.write("=" * 100 + "\n")
+    print("=" * 100)
