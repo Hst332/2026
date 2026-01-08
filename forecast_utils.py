@@ -1,46 +1,52 @@
-import pandas as pd
+import numpy as np
 
-def model_score(df, days=21):
-    """
-    Berechnet den Model Score basierend auf der Rendite der letzten `days` Tage.
-    Score liegt zwischen 0 und 1.
-    """
-    if len(df) < days + 1:
-        return 0.5  # fallback, falls zu wenig Daten
 
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-days])
-    r = (last - past) / past
-    score = 0.5 + max(min(r * 5, 0.5), -0.5)
-    return round(score, 4)
+
+
+def _close(df, idx):
+return df["Close"].iloc[idx].item()
+
+
+
+
+def model_score(df, lookback=21):
+last = _close(df, -1)
+past = _close(df, -lookback)
+
+
+r = (last / past) - 1.0
+
+
+score = 0.5 + np.tanh(r * 6) * 0.5
+return float(np.clip(score, 0.0, 1.0))
+
+
 
 
 def forecast_trend(df, days):
-    """
-    Berechnet den Trend (Forecast) über `days` Tage.
-    Rückgabe: '+', '-', '='
-    """
-    if len(df) < days + 1:
-        return "="
-
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-days])
-    r = (last - past) / past
-    if r > 0.002:
-        return "++"
-    elif r < -0.002:
-        return "--"
-    else:
-        return "="
+last = _close(df, -1)
+past = _close(df, -days)
 
 
-def trade_signal(score):
-    """
-    Liefert das Handelssignal basierend auf dem Model Score.
-    """
-    if score >= 0.65:
-        return "LONG"
-    elif score <= 0.35:
-        return "SHORT"
-    else:
-        return "NO_TRADE"
+r = (last / past) - 1.0
+
+
+if r > 0.01:
+return "++"
+elif r > 0.002:
+return "+"
+elif r < -0.01:
+return "--"
+elif r < -0.002:
+return "-"
+return "="
+
+
+
+
+def trade_signal(score, long=0.55, short=0.45):
+if score >= long:
+return "LONG"
+if score <= short:
+return "SHORT"
+return "NO_TRADE"
