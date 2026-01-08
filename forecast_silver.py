@@ -5,8 +5,8 @@ from datetime import datetime
 
 
 
-def gold_result():
-    df = load_silber()
+def silver_result():
+    df = load_silver()
     
     
     close = df["Close"].iloc[-1].item()
