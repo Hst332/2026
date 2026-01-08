@@ -1,27 +1,24 @@
-import metals_bundle
+from metals_bundle import load_gold
 from forecast_utils import model_score, forecast_trend, trade_signal
+from datetime import datetime
 
-def silver_result():
-    df = metals_bundle.load_silver()
-    
-    close = df["Close"]
-    if hasattr(close, "columns"):
-        close = close.iloc[:, 0]
-    close = float(close.iloc[-1])
 
-    score = model_score(df)
 
-    return {
-        "asset": "SILVER",
-        "date": df.index[-1].strftime("%Y-%m-%d"),
-        "close": f"{close:.2f} USD/oz",
-        "model_score": f"{score:.2%}",
-        "signal": trade_signal(score),
-        "forecast_1_5d": forecast_trend(df, 5),
-        "forecast_2_3w": forecast_trend(df, 21),
-        "strategy_lines": [
-            "≥ 0.96 → LONG",
-            "0.90–0.96 → LONG 50 %",
-            "Long only | Lev ≤ 15 | SL −20 %",
-        ],
-    }
+
+def gold_result():
+df = load_silber()
+
+
+close = df["Close"].iloc[-1].item()
+score = model_score(df)
+
+
+return {
+"asset": "GOLD",
+"date": datetime.utcnow().strftime("%Y-%m-%d"),
+"close": f"{close:.2f} USD/oz",
+"model_score": f"{score:.2%}",
+"signal": trade_signal(score),
+"forecast_1_5d": forecast_trend(df, 5),
+"forecast_2_3w": forecast_trend(df, 15),
+}
