@@ -1,52 +1,32 @@
-import numpy as np
+# forecast_utils.py
 
+def get_close(df, idx):
+    return float(df["Close"].iloc[idx])
 
-
-
-def _close(df, idx):
-return df["Close"].iloc[idx].item()
-
-
-
-
-def model_score(df, lookback=21):
-last = _close(df, -1)
-past = _close(df, -lookback)
-
-
-r = (last / past) - 1.0
-
-
-score = 0.5 + np.tanh(r * 6) * 0.5
-return float(np.clip(score, 0.0, 1.0))
-
-
-
+def model_score(df):
+    last = float(df["Close"].iloc[-1])
+    past = float(df["Close"].iloc[-21])
+    r = (last - past) / past
+    score = 0.5 + max(min(r * 5.0, 0.5), -0.5)
+    return round(score, 4)
 
 def forecast_trend(df, days):
-last = _close(df, -1)
-past = _close(df, -days)
+    last = float(df["Close"].iloc[-1])
+    past = float(df["Close"].iloc[-days])
+    r = (last - past) / past
+    if r > 0.02:
+        return "++"
+    elif r > 0:
+        return "+"
+    elif r < -0.02:
+        return "--"
+    else:
+        return "-"
 
-
-r = (last / past) - 1.0
-
-
-if r > 0.01:
-return "++"
-elif r > 0.002:
-return "+"
-elif r < -0.01:
-return "--"
-elif r < -0.002:
-return "-"
-return "="
-
-
-
-
-def trade_signal(score, long=0.55, short=0.45):
-if score >= long:
-return "LONG"
-if score <= short:
-return "SHORT"
-return "NO_TRADE"
+def trade_signal(score):
+    if score >= 0.6:
+        return "LONG"
+    elif score <= 0.4:
+        return "SHORT"
+    else:
+        return "NO_TRADE"
