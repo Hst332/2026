@@ -1,32 +1,25 @@
-# forecast_utils.py
+def forecast_trend(df, days: int) -> str:
+    if len(df) < days + 1:
+        return "="
 
-def get_close(df, idx):
-    return float(df["Close"].iloc[idx])
+    last = df["Close"].iloc[-1]
+    past = df["Close"].iloc[-days]
+    r = (last / past) - 1
 
-def model_score(df):
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-21])
-    r = (last - past) / past
-    score = 0.5 + max(min(r * 5.0, 0.5), -0.5)
-    return round(score, 4)
-
-def forecast_trend(df, days):
-    last = float(df["Close"].iloc[-1])
-    past = float(df["Close"].iloc[-days])
-    r = (last - past) / past
-    if r > 0.02:
+    if r > 0.01:
         return "++"
-    elif r > 0:
+    if r > 0.003:
         return "+"
-    elif r < -0.02:
+    if r < -0.01:
         return "--"
-    else:
+    if r < -0.003:
         return "-"
+    return "="
 
-def trade_signal(score):
-    if score >= 0.6:
+
+def trade_signal(score: float) -> str:
+    if score >= 0.60:
         return "LONG"
-    elif score <= 0.4:
+    if score <= 0.40:
         return "SHORT"
-    else:
-        return "NO_TRADE"
+    return "NO_TRADE"
