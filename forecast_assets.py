@@ -17,14 +17,15 @@ def forecast_asset(name, ticker, unit):
     close = float(df["Close"].iloc[-1])
     score = model_score(df)
 
-    return {
-        "asset": name,
-        "close": f"{close:.2f} {unit}",
-        "score": f"{score*100:.2f}%",
-        "signal": trade_signal(score),
-        "f_1_5": forecast_trend(df, 5),
-        "f_2_3w": forecast_trend(df, 21),
-    }
+  return {
+    "asset": name,
+    "close": close,
+    "score": score,
+    "signal": signal,
+    "f_1_5": forecast_trend(df, 5),
+    "f_2_3": forecast_trend(df, 21),   # ← DAS FEHLTE
+}
+
 
 
 def run_all():
