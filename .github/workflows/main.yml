@@ -2,7 +2,7 @@ name: Daily Forecast
 
 on:
   schedule:
-    - cron: '0 6 * * 1-5'  # 7 Uhr Wien-Zeit = UTC+1 → 6 Uhr UTC, Mo-Fr
+    - cron: '0 6 * * 1-5'   # 6 UTC = 7 Wien (Mo–Fr)
   workflow_dispatch:
 
 jobs:
@@ -10,32 +10,18 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Install Python packages
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pandas numpy scikit-learn yfinance
-      
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pandas numpy yfinance scikit-learn
-
 
       - name: Run forecast script
         run: python main.py
@@ -45,9 +31,9 @@ jobs:
         with:
           name: forecast-output
           path: forecast_output.txt
-          if-no-files-found: error    # statt warn, so sehen wir sofort, wenn nix da ist
-          overwrite: true             # wichtig! überschreibt alte Artifacts
-          
+          if-no-files-found: error
+          overwrite: true
+
       - name: Commit forecast output (if changed)
         run: |
           git config user.name "github-actions[bot]"
@@ -56,14 +42,13 @@ jobs:
           git diff --cached --quiet || git commit -m "Update forecast output [skip ci]"
           git push origin main || true
 
+      # ---------------- BACKTESTS (unverändert) ----------------
+
       - name: Run SILVER Backtest
         run: python SILVER_BACKTEST.py
-        
-      - name: Run Gold Backtest
+
+      - name: Run GOLD Backtest
         run: python GOLD_BACKTEST.py
 
       - name: Run COPPER Backtest
-        run: python COPPER_BACKTEST.py  
-
-
-
+        run: python COPPER_BACKTEST.py
