@@ -2,7 +2,7 @@ name: Daily Forecast
 
 on:
   schedule:
-    - cron: '0 6 * * 1-5'   # 6 UTC = 7 Wien (Mo–Fr)
+    - cron: '0 6 * * 1-5'   # 07:00 Wien = 06:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -21,9 +21,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install pandas numpy yfinance scikit-learn
 
-      - name: Run forecast script
+      - name: Run forecast
         run: python main.py
 
       - name: Upload forecast artifact
@@ -41,8 +41,6 @@ jobs:
           git add forecast_output.txt
           git diff --cached --quiet || git commit -m "Update forecast output [skip ci]"
           git push origin main || true
-
-      # ---------------- BACKTESTS (unverändert) ----------------
 
       - name: Run SILVER Backtest
         run: python SILVER_BACKTEST.py
