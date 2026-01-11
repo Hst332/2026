@@ -1,42 +1,36 @@
-def trade_decision(asset: str, prob_up: float):
-    """
-    Zentrale Handelslogik.
-    MUSS im Backtest und im Daily Forecast identisch genutzt werden.
-    """
-
+def decide_trade(asset, prob_up):
     asset = asset.upper()
 
-    # ---------------- GOLD ----------------
-    if asset == "GOLD":
-        if prob_up >= 0.55:
-            return "LONG", "100%"
-        elif prob_up >= 0.53:
-            return "LONG", "50%"
-        else:
-            return "NO_TRADE", "-"
-
-    # ---------------- SILVER ----------------
-    if asset == "SILVER":
-        if prob_up >= 0.96:
-            return "LONG", "100%"
-        else:
-            return "NO_TRADE", "-"
-
-    # ---------------- COPPER ----------------
-    if asset == "COPPER":
-        if prob_up >= 0.56:
-            return "LONG", "100%"
-        else:
-            return "NO_TRADE", "-"
-
-    # ---------------- NATURAL GAS ----------------
+    # NATURAL GAS (LONG + SHORT)
     if asset == "NATURAL GAS":
         if prob_up >= 0.56:
-            return "LONG", "100%"
+            return "LONG"
         elif prob_up <= 0.44:
-            return "SHORT", "100%"
+            return "SHORT"
         else:
-            return "NO_TRADE", "-"
+            return "NO_TRADE"
 
-    # ---------------- FALLBACK ----------------
-    return "NO_TRADE", "-"
+    # SILVER (LONG only)
+    if asset == "SILVER":
+        if prob_up >= 0.96:
+            return "LONG"
+        else:
+            return "NO_TRADE"
+
+    # GOLD (LONG only, abgestuft)
+    if asset == "GOLD":
+        if prob_up >= 0.55:
+            return "LONG_FULL"
+        elif prob_up >= 0.53:
+            return "LONG_HALF"
+        else:
+            return "NO_TRADE"
+
+    # COPPER (LONG only)
+    if asset == "COPPER":
+        if prob_up >= 0.56:
+            return "LONG"
+        else:
+            return "NO_TRADE"
+
+    return "NO_TRADE"
