@@ -1,6 +1,7 @@
 import yfinance as yf
 from model_core import model_score
-from forecast_utils import forecast_trend, trade_signal
+from forecast_utils import forecast_trend
+from decision_engine import trade_signal
 
 ASSETS = [
     ("GOLD", "GC=F", "USD/oz"),
