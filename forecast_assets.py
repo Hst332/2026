@@ -1,7 +1,6 @@
 import yfinance as yf
 from model_core import model_score
-from forecast_utils import forecast_trend
-from decision_engine import decide_trade
+from forecast_utils import forecast_trend, trade_signal
 
 ASSETS = [
     ("GOLD", "GC=F", "USD/oz"),
@@ -13,9 +12,9 @@ ASSETS = [
 def forecast_asset(name, ticker, unit):
     df = yf.download(ticker, period="1y", interval="1d", progress=False)
 
-    close = round(float(df["Close"].iloc[-1]), 1)
+    close = float(df["Close"].iloc[-1])
     score = model_score(df)
-    signal = decide_trade(name, score)
+    signal = trade_signal(name, score)
 
     return {
         "asset": name,
