@@ -1,23 +1,7 @@
-def decide_trade(asset, prob_up):
+def trade_signal(asset, prob_up):
     asset = asset.upper()
 
-    # NATURAL GAS (LONG + SHORT)
-    if asset == "NATURAL GAS":
-        if prob_up >= 0.56:
-            return "LONG"
-        elif prob_up <= 0.44:
-            return "SHORT"
-        else:
-            return "NO_TRADE"
-
-    # SILVER (LONG only)
-    if asset == "SILVER":
-        if prob_up >= 0.96:
-            return "LONG"
-        else:
-            return "NO_TRADE"
-
-    # GOLD (LONG only, abgestuft)
+    # GOLD
     if asset == "GOLD":
         if prob_up >= 0.55:
             return "LONG_FULL"
@@ -26,10 +10,20 @@ def decide_trade(asset, prob_up):
         else:
             return "NO_TRADE"
 
-    # COPPER (LONG only)
+    # SILVER
+    if asset == "SILVER":
+        return "LONG" if prob_up >= 0.96 else "NO_TRADE"
+
+    # COPPER
     if asset == "COPPER":
+        return "LONG" if prob_up >= 0.56 else "NO_TRADE"
+
+    # NATURAL GAS
+    if asset == "NATURAL GAS":
         if prob_up >= 0.56:
             return "LONG"
+        elif prob_up <= 0.44:
+            return "SHORT"
         else:
             return "NO_TRADE"
 
