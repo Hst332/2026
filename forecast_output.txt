@@ -1,0 +1,48 @@
+Run time (UTC): 2026-01-14 19:20:18
+==============================================================================================================
+ASSET         CLOSE     SCORE   SIGNAL       1-5D   2-3W   GPT 1-5D   GPT 2-3W   FINAL
+--------------------------------------------------------------------------------------------------------------
+GOLD          4643.0    0.700   LONG       ++    ++     Bullish   Bullish    LONG
+SILVER          92.6    0.700   LONG       ++    ++     Bullish   Bullish    LONG
+NATURAL GAS      3.1    0.300   SHORT      --    --     Bearish   Bearish    SHORT
+COPPER           6.1    0.700   LONG       ++    ++     Bullish   Bullish    LONG
+==============================================================================================================
+
+TRADING RULES (FINAL – BACKTEST VALIDATED)
+
+GOLD
+- Direction: LONG only
+- Entry: prob_up >= 0.53
+- Position sizing:
+    0.53 - 0.55 -> 50 %
+    >= 0.55     -> 100 %
+- Holding period: 5-20 trading days
+- Leverage: max 3-5
+- No short positions
+
+SILVER
+- Direction: LONG only
+- Entry: prob_up >= 0.96
+- Trades/year: ~12
+- Leverage: max 15
+- Stop-loss: hard -20 %
+- Ignore all signals below threshold
+
+COPPER
+- Direction: LONG only
+- Entry: prob_up >= 0.56
+- Trades/year: ~60-150
+- Leverage: max 5-10
+- Stop-loss: hard -20 %
+- No shorts
+
+NATURAL GAS
+- Direction: LONG & SHORT
+- LONG  if prob_up >= 0.56
+- SHORT if prob_up <= 0.44
+- Otherwise: NO TRADE
+- Leverage: max 10
+- Stop-loss: hard -20 %
+
+NOT TRADED
+- Crude Oil (too impulsive / unstable regimes)
